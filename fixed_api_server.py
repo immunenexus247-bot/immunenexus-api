@@ -43,26 +43,38 @@ except ModuleNotFoundError:
 
 # [교정 완료] 주피터에서 가져오신 진짜 딥러닝 신경망 모델 구조 구현부
 if HAS_TORCH:
+    # ✨ 주피터 가중치 파일(.pt)의 진짜 구조와 완벽하게 일치시킨 딥러닝 신경망 클래스
     class LightweightBiopmhcEngine(nn.Module):
-        def __init__(self, node_dim=128, hidden_dim=256, out_dim=3):
+        def __init__(self, node_dim=128, hidden_dim=64):  # 레이어 크기 불일치(3, 64) 대응
             super(LightweightBiopmhcEngine, self).__init__()
-            self.node_fc = nn.Linear(node_dim, hidden_dim)
-            self.groove_fc = nn.Linear(node_dim, hidden_dim)
+            # 깃허브 가중치 파일 내부에 들어있던 진짜 레이어 명칭들 복원
+            self.gcn1 = nn.Linear(node_dim, hidden_dim)
+            self.gcn2 = nn.Linear(hidden_dim, hidden_dim)
             self.displacement_head = nn.Linear(hidden_dim, 3)
-            self.clf_head = nn.Linear(hidden_dim, 1)
+            self.plddt_head = nn.Linear(hidden_dim, 1)
             
         def forward(self, node_features: torch.Tensor, groove_coords: torch.Tensor) -> dict:
-            x = torch.relu(self.node_fc(node_features))
-            g = torch.relu(self.groove_fc(groove_coords))
-            # 주피터 노트북에 적혀있던 원래 연산 메커니즘 유지
-            x = x + g
+            # 주피터 노트북의 기본 GCN 연산 및 헤드 연산 흐름 복구
+            x = torch.relu(self.gcn1(node_features))
+            x = torch.relu(self.gcn2(x))
             
             displacements = self.displacement_head(x)
-            confidence = torch.sigmoid(self.clf_head(x))
+            confidence = torch.sigmoid(self.plddt_head(x))
+            
             return {
                 "displacement_vectors": displacements,
                 "residue_confidence": confidence
             }
+
+    # 모델 선언 및 초기화 로직 (기존 코드 그대로 유지)
+    try:
+        model = LightweightBiopmhcEngine()
+        if os.path.exists("forced_model_model.pt"):
+            model.load_state_dict(torch.load("forced_model_model.pt", map_location=torch.device('cpu')))
+            model.eval()
+            print("✅ AI 딥러닝 모델 가중치 탑재 성공!")
+    except Exception as e:
+        print(f"⚠️ 모델 가중치 로드 실패: {e}")
 
     # 모델 가중치 로드 시도
     try:
