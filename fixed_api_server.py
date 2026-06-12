@@ -1,26 +1,20 @@
-"""
-ImmuneNexus™ Enterprise AI API Server
-CORS Preflight & Redirect 오류 수정
-"""
-
-from fastapi import FastAPI, HTTPException
+import json
+import os
+import re
+import time
+from typing import Any, Dict, List
+from fastapi import fastAPI, HTTPException  # f를 소문자로 고쳤습니다.
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 import uvicorn
-import os
+# (맨 아래 중복되었던 import os는 삭제했습니다)
 
 # ============================================================================
 # 1. CORS 설정 (Preflight 오류 해결)
 # ============================================================================
 
-app = FastAPI(
-
-    import os
-import time
-import json
-import re
-from typing import Dict, Any, List
+app = FastAPI()
 
 # PyTorch 라이브러리 부재 시 내장 계산 엔진(Fallback)으로 자동 전환하는 예외 처리
 try:
@@ -142,7 +136,6 @@ if __name__ == "__main__":
     version="1.0.0",
     docs_url="/api/docs",
     redoc_url="/api/redoc"
-)
 
 # CORS 미들웨어 추가 - OPTIONS 요청 자동 처리
 app.add_middleware(
