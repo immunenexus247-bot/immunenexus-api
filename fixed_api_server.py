@@ -3,7 +3,7 @@ import os
 import re
 import time
 from typing import Any, Dict, List
-from fastapi import fastAPI, HTTPException  # f를 소문자로 고쳤습니다.
+from fastapi import FastAPI, HTTPException  # f를 소문자로 고쳤습니다.
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
