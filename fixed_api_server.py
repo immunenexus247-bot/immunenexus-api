@@ -45,7 +45,7 @@ except ModuleNotFoundError:
 if HAS_TORCH:
     # ✨ 주피터 가중치 파일(.pt)의 진짜 구조와 완벽하게 일치시킨 딥러닝 신경망 클래스
     class LightweightBiopmhcEngine(nn.Module):
-        def __init__(self, node_dim=128, hidden_dim=64):  # 레이어 크기 불일치(3, 64) 대응
+        def __init__(self, node_dim=20, hidden_dim=64):  # 레이어 크기 불일치(3, 64) 대응
             super(LightweightBiopmhcEngine, self).__init__()
             # 깃허브 가중치 파일 내부에 들어있던 진짜 레이어 명칭들 복원
             self.gcn1 = nn.Linear(node_dim, hidden_dim)
