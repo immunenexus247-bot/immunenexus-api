@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: immunenexus-api
+    env: python
+    plan: free
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "uvicorn fixed_api_server:app --host 0.0.0.0 --port $PORT"
+
+    # 환경 변수
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11"
+      - key: PORT
+        value: "8000"
+
+    # 리소스 제한
+    scaling:
+      minInstances: 1
+      maxInstances: 1
+
+    # 헬스체크 (Sleep mode 방지)
+    healthCheckPath: /api/health
+    healthCheckInterval: 60
