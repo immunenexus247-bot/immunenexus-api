@@ -188,4 +188,4 @@ async def predict_epitope(data: PredictRequest):
 # ==========================================
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
-    uvicorn.run("fixed_api_server.py:app" if os.path.exists("fixed_api_server.py") else "fixed_api_server:app", host="0.0.0.0", port=port)
+    uvicorn.run("fixed_api_server:app", host="0.0.0.0", port=port)
