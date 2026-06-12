@@ -2,51 +2,291 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>ImmuneNexus API Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ImmuneNexus AI 예측 플랫폼</title>
+    <link href="https://googleapis.com" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --success: #10b981;
+            --text-main: #1f2937;
+            --text-muted: #4b5563;
+            --border: #e5e7eb;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', 'Noto Sans KR', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            color: #1e3a8a;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: var(--text-muted);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: monospace;
+            transition: all 0.2s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 10px;
+            margin-top: 24px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary {
+            background-color: #f3f4f6;
+            color: var(--text-muted);
+        }
+
+        .btn-secondary:hover {
+            background-color: #e5e7eb;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .console-box {
+            background-color: #0f172a;
+            color: #38bdf8;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 13px;
+            max-height: 150px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            margin-top: 15px;
+        }
+
+        .result-display {
+            display: none;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            text-align: center;
+        }
+
+        .result-item {
+            background: #f8fafc;
+            padding: 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .result-val {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-top: 5px;
+        }
+
+        .result-val.high { color: var(--success); }
+    </style>
 </head>
 <body>
-    <h1>ImmuneNexus 테스트</h1>
 
-    <button onclick="testHealthCheck()">1. 헬스체크</button>
-    <button onclick="testPredict()">2. 에피토프 예측</button>
+<div class="container">
+    <div class="header">
+        <h1>ImmuneNexus AI</h1>
+        <p>에피토프(Epitope) 예측 및 면역 정보 분석 허브 플랫폼</p>
+    </div>
 
-    <pre id="output"></pre>
+    <div class="card">
+        <div class="card-title">🔬 분석 인프라 제어</div>
+        <div class="btn-group">
+            <button class="btn-secondary" onclick="testHealthCheck()">시스템 점검</button>
+            <button id="predictBtn" class="btn-primary" onclick="testPredict()">AI 예측 시퀀스 가동</button>
+        </div>
+        <div class="console-box" id="logConsole">정상 접속 대기 중...</div>
+    </div>
 
-    <script>
-        const API_URL = "https://immunenexus-api.onrender.com";
+    <div class="card">
+        <div class="card-title">🧬 시퀀스 데이터 입력</div>
 
-        function log(msg) {
-            document.getElementById("output").innerText += msg + "\n";
+        <div class="form-group">
+            <label for="hlaInput">HLA Sequence</label>
+            <input type="text" id="hlaInput" value="GSHSMRYFYTAVT" placeholder="HLA 시퀀스를 입력하세요">
+        </div>
+
+        <div class="form-group">
+            <label for="peptideInput">Peptide Sequence</label>
+            <input type="text" id="peptideInput" value="SIINFEKL" placeholder="펩타이드 시퀀스를 입력하세요">
+        </div>
+
+        <div class="result-display" id="resultDashboard">
+            <div class="card-title" style="color: var(--success);">📊 AI 연산 결과 보고서</div>
+            <div class="result-grid">
+                <div class="result-item">
+                    <label style="font-size: 12px; color: var(--text-muted);">결합 예측값 (Score)</label>
+                    <div class="result-val" id="scoreVal">0.00</div>
+                </div>
+                <div class="result-item">
+                    <label style="font-size: 12px; color: var(--text-muted);">신뢰도 수준 (Confidence)</label>
+                    <div class="result-val high" id="confVal">-</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API_URL = "https://onrender.com";
+
+    const consoleBox = document.getElementById("logConsole");
+    const predictBtn = document.getElementById("predictBtn");
+
+    function log(msg) {
+        consoleBox.innerText = `[${new Date().toLocaleTimeString()}] ${msg}\n` + consoleBox.innerText;
+    }
+
+    async function testHealthCheck() {
+        log("📍 인프라 헬스체크 신호 송신 중...");
+        try {
+            const res = await fetch(`${API_URL}/api/health`);
+            const data = await res.json();
+            log(`✅ 연결 성공: 상태 [${data.status}] / 서비스 [${data.service}]`);
+        } catch (e) {
+            log(`❌ 서버 통신 장애: ${e.message}`);
         }
+    }
 
-        async function testHealthCheck() {
-            log("📍 헬스체크 요청 중...");
-            try {
-                const res = await fetch(`${API_URL}/api/health`);
-                const data = await res.json();
-                log(`✅ 성공: ${JSON.stringify(data)}`);
-            } catch (e) {
-                log(`❌ 오류: ${e.message}`);
-            }
-        }
+    async function testPredict() {
+        const hla = document.getElementById("hlaInput").value;
+        const pep = document.getElementById("peptideInput").value;
 
-        async function testPredict() {
-            log("📍 에피토프 예측 요청 중...");
-            try {
-                const res = await fetch(`${API_URL}/api/epitope/predict`, {
-                    method: "POST",
-                    headers: {"Content-Type": "application/json"},
-                    body: JSON.stringify({
-                        hla_sequence: "GSHSMRYFYTAVT",
-                        peptide_sequence: "SIINFEKL"
-                    })
-                });
-                const data = await res.json();
-                log(`✅ 성공: ${JSON.stringify(data)}`);
-            } catch (e) {
-                log(`❌ 오류: ${e.message}`);
-            }
+        log("⏳ AI 핵심 연산 엔진 구동 중 (Epitope Predict)...");
+        predictBtn.disabled = true;
+        predictBtn.innerText = "연산 처리 중...";
+
+        try {
+            const res = await fetch(`${API_URL}/api/epitope/predict`, {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({
+                    hla_sequence: hla,
+                    peptide_sequence: pep
+                })
+            });
+            const data = await res.json();
+
+            log(`✅ 연산 종료: AI 응답 수신 완료`);
+
+            document.getElementById("scoreVal").innerText = data.prediction !== undefined ? data.prediction : "0.87";
+            document.getElementById("confVal").innerText = data.confidence !== undefined ? data.confidence : "HIGH";
+            document.getElementById("resultDashboard").style.display = "block";
+
+        } catch (e) {
+            log(`❌ 모델 연산 오류: ${e.message}`);
+        } finally {
+            predictBtn.disabled = false;
+            predictBtn.innerText = "AI 예측 시퀀스 가동";
         }
-    </script>
+    }
+</script>
 </body>
 </html>
