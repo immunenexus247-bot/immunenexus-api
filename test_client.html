@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>ImmuneNexus API Test</title>
+</head>
+<body>
+    <h1>ImmuneNexus 테스트</h1>
+
+    <button onclick="testHealthCheck()">1. 헬스체크</button>
+    <button onclick="testPredict()">2. 에피토프 예측</button>
+
+    <pre id="output"></pre>
+
+    <script>
+        const API_URL = "http://localhost:8000";
+
+        function log(msg) {
+            document.getElementById("output").innerText += msg + "\n";
+        }
+
+        async function testHealthCheck() {
+            log("📍 헬스체크 요청 중...");
+            try {
+                const res = await fetch(`${API_URL}/api/health`);
+                const data = await res.json();
+                log(`✅ 성공: ${JSON.stringify(data)}`);
+            } catch (e) {
+                log(`❌ 오류: ${e.message}`);
+            }
+        }
+
+        async function testPredict() {
+            log("📍 에피토프 예측 요청 중...");
+            try {
+                const res = await fetch(`${API_URL}/api/epitope/predict`, {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({
+                        hla_sequence: "GSHSMRYFYTAVT",
+                        peptide_sequence: "SIINFEKL"
+                    })
+                });
+                const data = await res.json();
+                log(`✅ 성공: ${JSON.stringify(data)}`);
+            } catch (e) {
+                log(`❌ 오류: ${e.message}`);
+            }
+        }
+    </script>
+</body>
+</html>
