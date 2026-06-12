@@ -265,7 +265,11 @@ def keep_alive():
 # ============================================================================
 
 if __name__ == "__main__":
-    port = int(os.getenv("PORT", 8000))
+    # Render가 주는 포트 번호를 자동으로 읽고, 없으면 기본값 8000을 사용합니다.
+    port = int(os.environ.get("PORT", 8000))
+
+    # 서버를 외부에서 접속할 수 있도록 host를 0.0.0.0으로 바인딩합니다.
+    uvicorn.run("fixed_api_server:app", host="0.0.0.0", port=port)
 
     # Keep-alive 활성화 (Render 배포 시)
     keep_alive()
