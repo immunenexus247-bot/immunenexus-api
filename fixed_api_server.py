@@ -14,7 +14,19 @@ import uvicorn
 # 1. CORS 설정 (Preflight 오류 해결)
 # ============================================================================
 
+from fastapi.middleware.cors import CORSMiddleware
+
+# 1. FastAPI 객체 생성 (기존 코드)
 app = FastAPI()
+
+# 2. ✨ [CORS 복구] 외부 브라우저(Vercel)의 접근을 무조건 허용하는 설정
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # 모든 도메인에서의 접속을 허용합니다 (CORS 에러 완벽 해결)
+    allow_credentials=True,
+    allow_methods=["*"],  # GET, POST, OPTIONS 등 모든 통신 방식 허용
+    allow_headers=["*"],  # 모든 헤더 정보 허용
+)
 
 # PyTorch 라이브러리 부재 시 내장 계산 엔진(Fallback)으로 자동 전환하는 예외 처리
 try:
