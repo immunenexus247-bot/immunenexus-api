@@ -125,7 +125,7 @@ async function run() {
         document.getElementById("tcrAlpha").style.color = "#047857";
         document.getElementById("tcrBeta").style.color = "#047857";
 
-        document.getElementById("sv").innerText = "Inhibit form Resonance Tabulated Linked";
+        document.getElementById("sv").innerText = data.sv_text || "Inhibit form Resonance Tabulated Linked";
 
         // 4. 예측 스코어 및 상태 출력
         const scoreDisplay = data.vval_id2 || data.vfd_vval_id2 || "Score: 0.99";
