@@ -110,7 +110,7 @@ async function run() {
 
         if (!res.ok) throw new Error("Inference Server Error");
         
-        // 2. 🌟 [중복 박멸] responseText는 단 한 번만 선언해야 에러가 나지 않습니다.
+        // 2. 🌟 [중복 해결] responseText는 한 번만 선언합니다.
         const responseText = await res.text();
         const data = JSON.parse(responseText);
 
