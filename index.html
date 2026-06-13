@@ -18,9 +18,8 @@
 </head>
 <body>
 <div class="m">
-    <div style="text-align:center;"><h1>ImmuneNexus Central Hub v1.0</h1><p>항원 결합 구조 분석 및 도킹 구조 예측 엔진</p></div>
+    <div style="text-align:center;"><h1>ImmuneNexus Central Hub v1.0</h1><p>항원 기반 TCR 생성 및 도킹 3D 구조 디자인 대시보드</p></div>
     <div class="grid">
-        <!-- 기존 UI 왼쪽: 입력 패널 -->
         <div class="panel">
             <h3>🛸 분석 조건 데이터 입력</h3>
             <hr style="margin: 15px 0; border: 0; border-top: 1px solid #eee;">
@@ -28,8 +27,6 @@
             <div class="group"><label>HLA Allele Type</label><input type="text" id="hin" value="HLA-A*02:01"></div>
             <button class="btn" onclick="run()">⚡ 구조 모델 분석 가속가동</button>
         </div>
-
-        <!-- 기존 UI 오른쪽: 출력 결과 패널 -->
         <div class="panel">
             <h3>🧬 구조 모델 결과 (Output)</h3>
             <hr style="margin: 15px 0; border: 0; border-top: 1px solid #eee;">
@@ -54,55 +51,52 @@
             return;
         }
 
-        // 애니메이션 효과 및 대기 상태 전환
-        document.getElementById("mhc").innerText = "MHC 아미노산 역전환 변환 중...";
-        document.getElementById("tcr").innerText = "TCR Alpha/Beta 서열 최적화 중...";
-        document.getElementById("af").innerText = "GNN 임베딩 매핑 변환 중...";
-        document.getElementById("df").innerText = "GCN 2단계 추론 연산 중...";
-        document.getElementById("sv").innerText = "3D 구조 안정성 검사 중...";
+        document.getElementById("mhc").innerText = "MHC 아미노산 역전환 검색 중...";
+        document.getElementById("tcr").innerText = "최적 TCR 구조 디자인 중...";
+        document.getElementById("af").innerText = "GNN 프레임 매핑 임베딩 중...";
+        document.getElementById("df").innerText = "GCN 딥러닝 추론 연산 중...";
+        document.getElementById("sv").innerText = "3D 변위 안정성 등급 계산 중...";
 
         try {
-            // ✨ [상호작용 연동 교정] 백엔드 fixed_api_server.py 규격과 100% 동기화 전송
             const res = await fetch(API_URL + "/api/epitope/predict", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    hla_sequence: h,      // h_sequence 오타를 백엔드 규격에 맞춰 교정완료
-                    peptide_sequence: p   // p_sequence 오타를 백엔드 규격에 맞춰 교정완료
+                    hla_sequence: h,
+                    peptide_sequence: p
                 })
             });
 
-            if (!res.ok) throw new Error("서버 내부 추론 연산 실패");
+            if (!res.ok) throw new Error("서버 추론 장애");
             const data = await res.json();
 
-            // 백엔드가 처리해 준 진짜 AI 산출물 결과 데이터를 기존 5개 UI 박스에 정밀 바인딩
-            // 1. MHC Sequence : 알릴 명칭에서 긴 아미노산 사슬 서열로 자동 역전환된 데이터 명시
+            // 1. MHC Sequence : 역전환된 긴 서열 출력
             document.getElementById("mhc").innerText = data.mhc_real_sequence;
 
-            // 2. MHC Split Type : AI GNN 모델이 역으로 디자인해 낸 최적의 TCR 알파/베타 서열 매핑
+            // 2. MHC Split Type : AI가 디자인한 최적의 TCR 알파/베타 서열 출력
             document.getElementById("tcr").innerText = "TRA: " + data.generated_alpha + " / TRB: " + data.generated_beta;
 
-            // 3. AlphaFold Input : 펩타이드 토큰 인덱싱 데이터 매핑 프레임 완공 명시
+            // 3. AlphaFold Input : 펩타이드 연동 프레임 토큰화 완료 메시지 출력
             document.getElementById("af").innerText = "Peptide Core Framework Tokenized Linked.";
 
-            // 4. Docking Free Energy : 딥러닝 추론 결과물인 TCR 결합 성공 확률과 pLDDT 신뢰 점수 매핑
+            // 4. Docking Free Energy : 최종 결합 예측 점수와 신뢰 점수(pLDDT) 바인딩
             document.getElementById("df").innerText = (data.tcr_binding_score * 100).toFixed(2) + "% (pLDDT: " + data.plddt.toFixed(2) + ")";
 
-            // 5. Safety Verdict : 3D 구조 변위 벡터 안정성 등급 판정 결과 매핑 및 폰트 색상 제어
+            // 5. Safety Verdict : 3D 변위 벡터 안정성 등급 판단 및 폰트 컬러 실시간 변경
             document.getElementById("sv").innerText = data.stability;
             if (data.stability === "VERY HIGH" || data.stability === "HIGH") {
-                document.getElementById("sv").style.color = "#059669"; // 안전 등급 초록색
+                document.getElementById("sv").style.color = "#059669"; // 안전 초록색
             } else {
-                document.getElementById("sv").style.color = "#e53e3e"; // 위험 등급 빨간색
+                document.getElementById("sv").style.color = "#e53e3e"; // 위험 빨간색
             }
 
         } catch (e) {
-            alert("Render 백엔드 서버가 활성화(Live) 상태인지 확인해 주세요.");
-            document.getElementById("mhc").innerText = "연동 실패";
-            document.getElementById("tcr").innerText = "연동 실패";
-            document.getElementById("af").innerText = "연동 실패";
-            document.getElementById("df").innerText = "연동 실패";
-            document.getElementById("sv").innerText = "연동 실패";
+            alert("알림: Render 서버가 방금 켜졌거나 로드 단계일 수 있습니다. 잠시 후 가속가동 버튼을 다시 클릭해 주세요.");
+            document.getElementById("mhc").innerText = "연동 대기";
+            document.getElementById("tcr").innerText = "연동 대기";
+            document.getElementById("af").innerText = "연동 대기";
+            document.getElementById("df").innerText = "연동 대기";
+            document.getElementById("sv").innerText = "연동 대기";
         }
     }
 </script>
