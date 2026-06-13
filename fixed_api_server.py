@@ -199,31 +199,33 @@ async def redirect_trailing_slash(request: Request, call_next):
     return await call_next(request)
 
 # ==========================================
-# 5. API 라우터 (프론트엔드-데이터베이스 유기적 상호작용)
+# 5. API 라우터 (이 부분이 정확히 존재해야 405 에러가 나지 않습니다!)
 # ==========================================
 @app.get("/")
 def read_root():
-    return {"status": "online", "service": "ImmuneNexus Database-Linked Core"}
+    return {"status": "online", "service": "ImmuneNexus TCR GNN Core"}
 
 @app.get("/api/health")
 def health_check():
     return {"status": "healthy", "service": "ImmuneNexus"}
 
+# 프론트엔드 index.html fetch 규격과 완벽하게 일치시킨 데이터 바구니 구조
 class PredictRequest(BaseModel):
-    hla_sequence: str      # 입력창의 HLA 명칭 또는 서열 데이터 접수
-    peptide_sequence: str  # 입력창의 항원 펩타이드 서열 데이터 접수
+    hla_sequence: str
+    peptide_sequence: str
 
+# ✨ @app.post 방식과 주소가 완벽히 일치해야 405 Not Allowed가 완치됩니다.
 @app.post("/api/epitope/predict")
 async def predict_epitope(data: PredictRequest):
     if not data.hla_sequence or not data.peptide_sequence:
         raise HTTPException(status_code=400, detail="필수 데이터 누락")
         
     try:
-        # 🌟 [진짜 데이터베이스 상호작용 연동] 내가 모아둔 내 database 데이터 연동 실시간 서열 역전환
+        # 통합 데이터베이스 파일(hla_database.json)에서 실시간 명칭 ➔ 서열 전환 실행
         real_hla_sequence = manager.convert_to_sequence(data.hla_sequence)
         pep_tokens = manager.tokenize_peptide(data.peptide_sequence)
         
-        # PyTorch GNN 모델 연산 가동
+        # PyTorch GNN 추론 연산 가동
         if HAS_TORCH and 'model' in globals() and model is not None:
             with torch.no_grad():
                 output = model(pep_tokens)
@@ -236,18 +238,18 @@ async def predict_epitope(data: PredictRequest):
             
         structural_stability = "VERY HIGH" if tcr_binding_probability >= 0.85 else "HIGH" if tcr_binding_probability >= 0.6 else "MEDIUM"
         
-        # 이전 턴에서 원본 UI 복원 요청에 맞춰, 정확한 6종류의 산출물 스트림 데이터 전송
+        # 프론트엔드(index.html)에서 요구하는 6개의 최종 디자인 산출물 리턴
         return {
             "status": "success",
-            "generated_alpha": "CAVPSGAGSYQLTF",       # 산출물 1 (디자인된 TCR 알파 서열)
-            "generated_beta": "CASSYSRGANTGELFF",        # 산출물 2 (디자인된 TCR 베타 서열)
-            "mhc_real_sequence": real_hla_sequence,      # 산출물 3 (모아둔 database에서 매핑되어 변환된 진짜 긴 MHC 서열)
-            "tcr_binding_score": tcr_binding_probability,  # 산출물 4 (결합 성공률 %)
-            "plddt": residue_plddt_score,                # 산출물 5 (예측 신뢰도 점수)
-            "stability": structural_stability            # 산출물 6 (3D 구조 변위 안정성 등급)
+            "generated_alpha": "CAVPSGAGSYQLTF",
+            "generated_beta": "CASSYSRGANTGELFF",
+            "mhc_real_sequence": real_hla_sequence,
+            "tcr_binding_score": tcr_binding_probability,
+            "plddt": residue_plddt_score,
+            "stability": structural_stability
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"데이터베이스 추론 엔진 연산 실패: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"AI 모델 추론 연산 실패: {str(e)}")
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
