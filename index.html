@@ -15,8 +15,6 @@
         .item { margin-bottom: 16px; }
         .item label { display: block; font-size: 0.85rem; font-weight: 600; color: #666; margin-bottom: 6px; }
         .val { background: #f7fafc; border: 1px solid #edf2f7; padding: 12px; border-radius: 6px; font-family: monospace; min-height: 20px; word-break: break-all; }
-
-        /* ⚖️ 법적 고지 전용 세련된 스타일 정의 */
         .disclaimer-panel { background: #fffdf5; border: 1px solid #fbd38d; border-radius: 12px; padding: 20px; margin-top: 10px; font-size: 0.8rem; color: #744210; line-height: 1.6; }
         .disclaimer-panel h4 { margin-top: 0; margin-bottom: 8px; color: #9c4221; font-size: 0.9rem; font-weight: 700; text-transform: uppercase; }
         .disclaimer-panel ul { margin-left: 20px; margin-top: 6px; }
@@ -30,16 +28,18 @@
     </div>
 
     <div class="grid">
-        <!-- 왼쪽 패널: 분석 조건 입력 -->
+        <!-- 왼쪽 패널: 분석 조건 입력 (요청 사항 반영 구역) -->
         <div class="panel">
             <h3>🛸 Analysis Condition Input</h3>
             <hr style="margin: 15px 0; border: 0; border-top: 1px solid #eee;">
-            <div class="group"><label>Peptide Sequence</label><input type="text" id="pin" value="SIINFEKL"></div>
-            <div class="group"><label>HLA Allele Type</label><input type="text" id="hin" value="HLA-A*02:01"></div>
+            <!-- ✨ 1. Peptide Sequence -> Antigen Peptide Sequence 교정 완료 -->
+            <div class="group"><label>Antigen Peptide Sequence</label><input type="text" id="pin" value="SIINFEKL"></div>
+            <!-- ✨ 2. HLA Allele Type -> HLA Allele Type (MHC) 교정 완료 -->
+            <div class="group"><label>HLA Allele Type (MHC)</label><input type="text" id="hin" value="HLA-A*02:01"></div>
             <button class="btn" onclick="run()">⚡ Accelerate Structural Model Analysis</button>
         </div>
 
-        <!-- 오른쪽 패널: 산출물 출력부 -->
+        <!-- 오른쪽 패널: 산출물 출력부 (기존 완벽 세팅 유지) -->
         <div class="panel">
             <h3>🧬 Structural Model Output</h3>
             <hr style="margin: 15px 0; border: 0; border-top: 1px solid #eee;">
@@ -52,7 +52,7 @@
         </div>
     </div>
 
-    <!-- ⚖️ [법적 조항 추가 완료] 글로벌 법률 컴플라이언스 준수 문구 -->
+    <!-- 법적 고지 패널 (컴플라이언스 유지) -->
     <div class="disclaimer-panel">
         <h4>⚖️ Legal Disclaimer & Terms of Use</h4>
         <p>Welcome to ImmuneNexus Central Hub. By using this free open-source AI platform, you acknowledge and agree to the following legal terms:</p>
