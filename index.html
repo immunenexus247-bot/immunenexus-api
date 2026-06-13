@@ -17,7 +17,7 @@
         .item label { display: block; font-size: 0.85rem; font-weight: 600; color: #666; margin-bottom: 6px; }
         .val { background: #f7fafc; border: 1px solid #edf2f7; padding: 12px; border-radius: 6px; font-family: monospace; min-height: 20px; word-break: break-all; }
 
-        /* 👑 TCR 결합 예측 디자인 하이라이트 전용 메인 카드 */
+        /* 👑 [핵심 메리트 최적화] 최상단 거대 TCR 생성 디스플레이 보드 */
         .tcr-master-card { background: #f0fdf4; border: 2px solid #6ee7b7; border-radius: 16px; padding: 24px; margin-bottom: 8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
         .tcr-master-card h2 { margin-top: 0; color: #065f46; font-size: 1.25rem; font-weight: 700; text-transform: uppercase; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
         .tcr-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
@@ -73,7 +73,7 @@
 </div>
 
 <script>
-    const API_URL = "https://onrender.com";
+    const API_URL = "https://immune-nexus-server.onrender.com";
 
     async function run() {
         const p = document.getElementById("pin").value.trim();
@@ -95,79 +95,13 @@
         document.getElementById("sv").innerText = "Computing 3D displacement stability grade...";
 
         try {
-            // 끝부분에 슬래시(/)를 붙여 리다이렉트 및 preflight CORS 위반 에러 완벽 치유
+            // 주소 끝에 슬래시(/)를 정밀 동기화하여 301 리다이렉트 및 CORS preflight 보안 차단 완치
             const res = await fetch(API_URL + "/api/epitope/predict/", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ hla_sequence: h, peptide_sequence: p })
-            });
-
-            if (!res.ok) throw new Error("Inference Server Error");
-            const data = await res.json();
-
-            document.getElementById("mhc").innerText = data.mhc_real_sequence;
-
-            // 👑 모델 핵심 메리트인 생성된 TCR 알파/베타 사슬 서열을 거대 상단 카드에 강렬하게 바인딩
-            document.getElementById("tcrAlpha").innerText = data.generated_alpha;
-            document.getElementById("tcrBeta").innerText = data.generated_beta;
-            document.getElementById("tcrAlpha").style.color = "#065f46"; 
-            document.getElementById("tcrBeta").style.color = "#065f46";
-
-            document.getElementById("af").innerText = "Peptide Core Framework Tokenized Linked.";
-            document.getElementById("df").innerText = (data.tcr_binding_score * 100).toFixed(2) + "% (pLDDT: " + data.plddt.toFixed(2) + ")";
-
-            document.getElementById("sv").innerText = data.stability;
-            if (data.stability === "VERY HIGH" || data.stability === "HIGH") {
-                document.getElementById("sv").style.color = "#059669";
-            } else {
-                document.getElementById("sv").style.color = "#e53e3e";
-            }
-
-        } catch (e) {
-            alert("Notice: The Render server may be initializing. Please click the accelerate button again in a moment.");
-            document.getElementById("mhc").innerText = "Connection waiting";
-            document.getElementById("tcrAlpha").innerText = "Waiting...";
-            document.getElementById("tcrBeta").innerText = "Waiting...";
-            document.getElementById("af").innerText = "Connection waiting";
-            document.getElementById("df").innerText = "Connection waiting";
-            document.getElementById("sv").innerText = "Connection waiting";
-        }
-    }
-</script>
-</body>
-</html>
-
-<script>
-    const API_URL = "https://onrender.com";
-
-    async function run() {
-        const p = document.getElementById("pin").value.trim();
-        const h = document.getElementById("hin").value.trim();
-
-        if (!p || !h) {
-            alert("Please enter both Peptide and HLA data.");
-            return;
-        }
-
-        document.getElementById("mhc").innerText = "Searching MHC amino acid inverse sequence...";
-        document.getElementById("tcrAlpha").innerText = "Designing Alpha...";
-        document.getElementById("tcrBeta").innerText = "Designing Beta...";
-        document.getElementById("tcrAlpha").style.color = "#a0aec0";
-        document.getElementById("tcrBeta").style.color = "#a0aec0";
-
-        document.getElementById("af").innerText = "Embedding GNN frame mapping...";
-        document.getElementById("df").innerText = "Calculating GCN deep learning inference...";
-        document.getElementById("sv").innerText = "Computing 3D displacement stability grade...";
-
-        try {
-            // 끝부분에 슬래시(/)를 붙여 리다이렉트 예방
-            const res = await fetch(API_URL + "/api/epitope/predict/", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                // 🚨 [422 에러 완치 핵심] 백엔드 fixed_api_server.py의 PredictRequest 규격과 100% 동기화
                 body: JSON.stringify({ 
-                    hla_sequence: h,      // h_sequence 오타를 백엔드와 정확히 일치시킴
-                    peptide_sequence: p   // p_sequence 오타를 백엔드와 정확히 일치시킴
+                    hla_sequence: h, 
+                    peptide_sequence: p 
                 })
             });
 
@@ -176,7 +110,7 @@
 
             document.getElementById("mhc").innerText = data.mhc_real_sequence;
 
-            // AI가 역생성해낸 TCR 서열을 거대 상단 카드에 하이라이트 바인딩
+            // 👑 모델 핵심 메리트인 생성된 TCR 알파/베타 사슬 서열을 거대 상단 카드에 하이라이트 바인딩
             document.getElementById("tcrAlpha").innerText = data.generated_alpha;
             document.getElementById("tcrBeta").innerText = data.generated_beta;
             document.getElementById("tcrAlpha").style.color = "#065f46"; 
