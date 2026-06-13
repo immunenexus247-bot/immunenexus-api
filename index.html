@@ -44,20 +44,35 @@
             <button class="btn" onclick="run()">⚡ Accelerate Structural Model Analysis</button>
         </div>
 
-        <div class="panel">
-            <h3>🧬 Structural Model Output</h3>
-            <hr style="margin: 15px 0; border: 0; border-top: 1px solid #eee;">
-            <div class="tcr-master-card">
-                <h2>✨ Generated TCR Sequences (Core Output)</h2>
-                <div class="tcr-row">
-                    <div class="tcr-box"><label>TCR Alpha Chain</label><div class="tcr-val" id="tcrAlpha">Waiting...</div></div>
-                    <div class="tcr-box"><label>TCR Beta Chain</label><div class="tcr-val" id="tcrBeta">Waiting...</div></div>
-                </div>
+        <div class=<!-- 💡 화면에 결과를 보여주는 영역의 ID 이름을 자바스크립트와 완벽히 일치시킵니다 -->
+            <!-- 🌟 화면에 결과를 보여주는 영역의 ID 이름을 자바스크립트와 완벽히 일치시켰습니다 -->
+            <div class="output-panel">
+                <h3>Structural Model Outputs</h3>
+                
+                <!-- 1. TCR Alpha Chain 칸 -->
+                <div class="field-label">TCR Alpha Chain (Core Output)</div>
+                <div class="field-value" id="tcrAlpha">Waiting for connection...</div>
+                
+                <!-- 2. TCR Beta Chain 칸 -->
+                <div class="field-label">TCR Beta Chain (Core Output)</div>
+                <div class="field-value" id="tcrBeta">Waiting for connection...</div>
+                
+                <!-- 3. MHC Sequence 칸 -->
+                <div class="field-label">MHC Sequence (3D Prediction)</div>
+                <div class="field-value" id="mhc">Waiting for connection...</div>
+                
+                <!-- 4. Structural Feature Vector 칸 -->
+                <div class="field-label">Structural Feature Vector</div>
+                <div class="field-value" id="af">Waiting for connection...</div>
+                
+                <!-- 5. Docking Free Energy 칸 -->
+                <div class="field-label">Docking Free Energy</div>
+                <div class="field-value" id="df">Waiting for connection...</div>
+                
+                <!-- 6. Safety Verdict 칸 -->
+                <div class="field-label">Safety Verdict</div>
+                <div class="field-value" id="sv">Waiting for connection...</div>
             </div>
-            <div class="item"><label>MHC Sequence</label><div class="val" id="mhc">Waiting for connection...</div></div>
-            <div class="field-label">Structural Feature Vector</div>class="val" id="af">Waiting for connection...</div></div>
-            <div class="item"><label>Docking Free Energy</label><div class="val" id="df" style="font-weight: bold;">Waiting for connection...</div></div>
-            <div class="item"><label>Safety Verdict</label><div class="val" id="sv" style="font-weight: bold;">Waiting for connection...</div></div>
         </div>
     </div>
 
