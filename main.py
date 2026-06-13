@@ -21,7 +21,7 @@ app.add_middleware(
 class PredictInput(BaseModel):
     data: str
 
-# 2. 에러가 나던 predict 엔드포인트 예시
+# 2. 에러가 나던 predict 엔드포인트
 @app.post("/predict/")
 async def predict(item: PredictInput):
     # 이곳에 기존 예측(predict) 로직을 넣으시면 됩니다.
