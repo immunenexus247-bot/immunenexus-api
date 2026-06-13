@@ -96,13 +96,11 @@ async function run() {
     document.getElementById("sv").innerText = "Computing Thermodynamic Equilibrium Grade...";
 
     try {
-        // 1. 주소 및 경로 정밀 연동 (CORS 차단 방지)
-            try {
-        // 1. 주소 및 경로 정밀 연동 (CORS 차단 방지)
+        // 1. 주소 및 경로 정밀 연동 (들여쓰기 정렬 완료)
         const res = await fetch(`${API_URL}/api/epitope/predict`, {
             method: "POST",
             headers: {
-                "Content-Type": "text/plain"  // 브라우저의 사전 검사(OPTIONS) 패스
+                "Content-Type": "text/plain"  // CORS 사전 검사 우회
             },
             body: JSON.stringify({
                 hla_sequence: h,
@@ -112,15 +110,15 @@ async function run() {
 
         if (!res.ok) throw new Error("Inference Server Error");
         
-        // 2. 백엔드가 보낸 PlainText 데이터를 자바스크립트 객체로 올바르게 변환 (JSON.parse)
+        // 2. 표준 자바스크립트 객체 파싱 적용
         const responseText = await res.text();
         const data = JSON.parse(responseText);
 
-        // 3. 백엔드 hla_database.json에서 찾아온 진짜 서열 데이터를 화면 UI에 매핑
+        // 3. 백엔드 hla_database.json에서 찾아온 진짜 서열 데이터를 화면 UI에 출력
         document.getElementById("af").innerText = data.vfd_vval_sequence;
         document.getElementById("mhc").innerText = data.generated_mhc;
         
-        // 🌟 고정되어 있던 가짜 테스트용 텍스트를 지우고 진짜 데이터를 출력합니다!
+        // 가짜 텍스트를 완벽히 걷어내고 진짜 데이터를 바인딩합니다.
         document.getElementById("tcrAlpha").innerText = data.generated_alpha;
         document.getElementById("tcrBeta").innerText = data.generated_beta;
         
@@ -129,7 +127,7 @@ async function run() {
 
         document.getElementById("sv").innerText = "Inhibit form Resonance Tabulated Linked";
 
-        // 4. 스코어 및 결과 판단 출력
+        // 4. 예측 스코어 및 상태 출력
         const scoreDisplay = data.vval_id2 || data.vfd_vval_id2 || "Score: 0.99";
         document.getElementById("df").innerText = `vfd_vval_indicator: ${data.vfd_vval_indicator} / ${scoreDisplay}`;
         
@@ -140,6 +138,7 @@ async function run() {
         }
 
     } catch (err) {
+        // 🌟 이 누락되었던 catch 블록과 닫는 괄호들이 완벽하게 복구되어 SyntaxError가 소멸합니다!
         alert("Notice: The Render server can be initialized. Please click the accelerate button again in a moment.");
         document.getElementById("mhc").innerText = "Inference failure";
         document.getElementById("tcrAlpha").innerText = "Inference failure";
@@ -148,7 +147,8 @@ async function run() {
         document.getElementById("df").innerText = "Inference failure";
         document.getElementById("sv").innerText = "Inference failure";
     }
-} // 🌟 지워져 있던 함수 닫는 중괄호가 복구되어 SyntaxError가 완전히 해결됩니다.
+}
+
 </script>
 </body>
 </html>
