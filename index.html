@@ -76,69 +76,70 @@
 <script>
     const API_URL = "https://immunenexus-api-ktbt.onrender.com";
 
-    async function run() {
-        const p = document.getElementById("pin").value.trim();
-        const h = document.getElementById("hin").value.trim();
+async function run() {
+    const p = document.getElementById("pin").value.trim();
+    const h = document.getElementById("hin").value.trim();
 
-        if (!p || !h) {
-            alert("Please enter both Peptide and HLA data.");
-            return;
-        }
-
-        document.getElementById("mhc").innerText = "Searching MHC amino acid inverse sequence...";
-        document.getElementById("tcrAlpha").innerText = "Designing Alpha...";
-        document.getElementById("tcrBeta").innerText = "Designing Beta...";
-        document.getElementById("tcrAlpha").style.color = "#a0aec0";
-        document.getElementById("tcrBeta").style.color = "#a0aec0";
-
-        document.getElementById("af").innerText = "Embedding GNN frame mapping...";
-        document.getElementById("df").innerText = "Calculating Quantum Mechanical Force Field...";
-        document.getElementById("sv").innerText = "Computing Thermodynamic Equilibrium Grade...";
-
-        try {
-            // 끝부분 슬래시 정밀 동기화를 통해 405 및 리다이렉트 CORS 보안 차단 완치
-            const res = await fetch(API_URL + "/api/epitope/predict/", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ 
-                    hla_sequence: h, 
-                    peptide_sequence: p 
-                })
-            });
-
-            if (!res.ok) throw new Error("Inference Server Error");
-            const data = await res.json();
-
-            document.getElementById("mhc").innerText = data.mhc_real_sequence;
-
-            // 핵심 구조 산출물 데이터 에메랄드 카드 보드 바인딩
-            document.getElementById("tcrAlpha").innerText = data.generated_alpha;
-            document.getElementById("tcrBeta").innerText = data.generated_beta;
-            document.getElementById("tcrAlpha").style.color = "#065f46"; 
-            document.getElementById("tcrBeta").style.color = "#065f46";
-
-            document.getElementById("af").innerText = "Peptide Core Framework Tokenized Linked.";
-
-            // 🚨 [물리학·화학 수치 연동 핵심] 백분율 기호를 제거하고 Gibbs 자유 에너지 단위(kcal/mol)로 표출
-            document.getElementById("df").innerText = data.tcr_binding_score + " kcal/mol (pLDDT: " + data.plddt.toFixed(2) + ")";
-
-            document.getElementById("sv").innerText = data.stability;
-            if (data.stability.includes("VERY HIGH") || data.stability.includes("HIGH")) {
-                document.getElementById("sv").style.color = "#059669";
-            } else {
-                document.getElementById("sv").style.color = "#e53e3e";
-            }
-
-        } catch (e) {
-            alert("Notice: The Render server may be initializing. Please click the accelerate button again in a moment.");
-            document.getElementById("mhc").innerText = "Connection waiting";
-            document.getElementById("tcrAlpha").innerText = "Waiting...";
-            document.getElementById("tcrBeta").innerText = "Waiting...";
-            document.getElementById("af").innerText = "Connection waiting";
-            document.getElementById("df").innerText = "Connection waiting";
-            document.getElementById("sv").innerText = "Connection waiting";
-        }
+    if (!p || !h) {
+        alert("Please enter both Peptide and HLA data.");
+        return;
     }
+
+    document.getElementById("mhc").innerText = "Searching MHC amino acid inverse sequence...";
+    document.getElementById("tcrAlpha").innerText = "Designing Alpha...";
+    document.getElementById("tcrBeta").innerText = "Designing Beta...";
+    document.getElementById("tcrAlpha").style.color = "#a0aec0";
+    document.getElementById("tcrBeta").style.color = "#a0aec0";
+
+    document.getElementById("af").innerText = "Embedding GNN frame mapping...";
+    document.getElementById("df").innerText = "Calculating Quantum Mechanical Force Field...";
+    document.getElementById("sv").innerText = "Computing Thermodynamic Equilibrium Grade...";
+
+    try {
+        // 끝부분 슬래시 정밀 동기화를 통해 405 및 리다이렉트 CORS 보안 차단 완벽 완화
+        const res = await fetch(`${API_URL}/api/epitope/predict/`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                hla_sequence: h,      // 백엔드 PredictInput 모델과 정확히 일치시킴
+                peptide_sequence: p   // 백엔드 PredictInput 모델과 정확히 일치시킴
+            })
+        });
+
+        if (!res.ok) throw new Error("Inference Server Error");
+        const data = await res.json();
+
+        document.getElementById("af").innerText = data.vfd_vval_sequence;
+
+        // 인공지능 분석 결과 값을 화면의 각 컴포넌트에 매핑
+        document.getElementById("mhc").innerText = data.generated_mhc;
+        document.getElementById("tcrAlpha").innerText = data.generated_alpha;
+        document.getElementById("tcrBeta").innerText = data.generated_beta;
+        document.getElementById("tcrAlpha").style.color = "#047857";
+        document.getElementById("tcrBeta").style.color = "#047857";
+
+        document.getElementById("sv").innerText = "Inhibit form Resonace Tabulated Linked";
+
+        // 예측 스코어 값(vfd_vval_indicator)에 따라 화면에 통과/미통과 글씨 및 색상 출력
+        document.getElementById("df").innerText = `vfd_vval_indicator: ${data.vfd_vval_indicator} / ${data.vfd_vval_id2}`;
+        if (data.vfd_vval_indicator === 'REFUSED') {
+            document.getElementById("df").style.color = "#b91c1c";
+        } else {
+            document.getElementById("df").style.color = "#047857";
+        }
+
+    } catch (err) {
+        alert("Notice: The Render server can be initialized. Please click the accelerate button again in a moment.");
+        document.getElementById("mhc").innerText = "Inference failure";
+        document.getElementById("tcrAlpha").innerText = "Inference failure";
+        document.getElementById("tcrBeta").innerText = "Inference failure";
+        document.getElementById("af").innerText = "Inference failure";
+        document.getElementById("df").innerText = "Inference failure";
+        document.getElementById("sv").innerText = "Inference failure";
+    }
+}
 </script>
 </body>
 </html>
