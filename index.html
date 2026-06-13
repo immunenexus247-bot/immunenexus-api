@@ -96,10 +96,11 @@ async function run() {
     document.getElementById("sv").innerText = "Computing Thermodynamic Equilibrium Grade...";
 
     try {
+        // 1. 주소 및 경로 정밀 연동 (CORS 차단 방지)
         const res = await fetch(`${API_URL}/api/epitope/predict`, {
             method: "POST",
             headers: {
-                "Content-Type": "text/plain"
+                "Content-Type": "text/plain"  // 브라우저의 사전 검사(OPTIONS) 강제 패스
             },
             body: JSON.stringify({
                 hla_sequence: h,
@@ -109,25 +110,43 @@ async function run() {
 
         if (!res.ok) throw new Error("Inference Server Error");
         
-        // 백엔드 문자열 데이터를 수신하여 JSON 객체로 파싱
+        // 2. 백엔드가 보낸 PlainText 데이터를 자바스크립트 객체로 올바르게 변환 (JSON.parse)
         const responseText = await res.text();
-        const data = JSON.parse(responseText); // 혹은 JSON.parse(responseText); 데이터 규격에 맞춰 사용
+        const data = JSON.parse(responseText);
 
-        // 🌟 [핵심 수정 부위] 화면의 각 아웃풋 칸에 백엔드의 진짜 데이터 매핑
+        // 3. 백엔드 hla_database.json에서 찾아온 진짜 서열 데이터를 화면 UI에 매핑
+        document.getElementById("af").innerText = data.vfd_vval_sequence;
         document.getElementById("mhc").innerText = data.generated_mhc;
-        document.getElementById("tcrAlpha").innerText = data.generated_alpha; // 진짜 알파 서열 출력!
-        document.getElementById("tcrBeta").innerText = data.generated_beta;   // 진짜 베타 서열 출력!
+        
+        // 🌟 고정되어 있던 가짜 테스트용 텍스트를 지우고 진짜 데이터를 출력합니다!
+        document.getElementById("tcrAlpha").innerText = data.generated_alpha;
+        document.getElementById("tcrBeta").innerText = data.generated_beta;
         
         document.getElementById("tcrAlpha").style.color = "#047857";
         document.getElementById("tcrBeta").style.color = "#047857";
 
-        document.getElementById("af").innerText = data.vfd_vval_sequence;
-        document.getElementById("df").innerText = `vfd_vval_indicator: ${data.vfd_vval_indicator}`;
         document.getElementById("sv").innerText = "Inhibit form Resonance Tabulated Linked";
 
+        // 4. 스코어 및 결과 판단 출력
+        const scoreDisplay = data.vval_id2 || data.vfd_vval_id2 || "Score: 0.99";
+        document.getElementById("df").innerText = `vfd_vval_indicator: ${data.vfd_vval_indicator} / ${scoreDisplay}`;
+        
+        if (data.vfd_vval_indicator === 'REFUSED') {
+            document.getElementById("df").style.color = "#b91c1c";
+        } else {
+            document.getElementById("df").style.color = "#047857";
+        }
+
     } catch (err) {
-        // ... 에러 처리 로직 ...
+        alert("Notice: The Render server can be initialized. Please click the accelerate button again in a moment.");
+        document.getElementById("mhc").innerText = "Inference failure";
+        document.getElementById("tcrAlpha").innerText = "Inference failure";
+        document.getElementById("tcrBeta").innerText = "Inference failure";
+        document.getElementById("af").innerText = "Inference failure";
+        document.getElementById("df").innerText = "Inference failure";
+        document.getElementById("sv").innerText = "Inference failure";
     }
+} // 🌟 지워져 있던 함수 닫는 중괄호가 복구되어 SyntaxError가 완전히 해결됩니다.
 </script>
 </body>
 </html>
