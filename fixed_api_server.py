@@ -4,43 +4,29 @@ import re
 import time
 from typing import Any, Dict, List
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.cors import CORSMiddleware  # 미들웨어 정상 등록 확인
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 import uvicorn
 
-# 데이터베이스 핸들링을 위한 패키지 임포트
-try:
-    import pandas as pd
-    HAS_PANDAS = True
-except ModuleNotFoundError:
-    HAS_PANDAS = False
-
-# PyTorch 핵심 엔진 임포트 예외 처리
-try:
-    import torch
-    import torch.nn as nn
-    HAS_TORCH = True
-except ModuleNotFoundError:
-    HAS_TORCH = False
-
 # ==========================================
-# 1. FastAPI 인스턴스 생성 및 CORS 완벽 설정
+# 1. FastAPI 인스턴스 생성 및 CORS 보안 정책 완전 개방
 # ==========================================
 app = FastAPI(
-    title="ImmuneNexus Hub AI API",
+    title="ImmuneNexus TCR Design AI API",
     version="1.0.0",
     docs_url="/api/docs",
     redoc_url="/api/redoc"
 )
 
+# 🚨 브라우저의 net::ERR_FAILED 현상을 원천 박멸하는 무조건 허용 설정
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Vercel 프론트엔드 플랫폼의 완벽한 상호작용 통신 허용
+    allow_origins=["*"],  # 모든 외부 프론트엔드 플랫폼 도메인 승인
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["*"],  # POST, GET, OPTIONS 등 모든 메소드 전면 허용
+    allow_headers=["*"],  # 모든 통신 헤더 승인
     max_age=6000
 )
 
@@ -199,7 +185,7 @@ async def redirect_trailing_slash(request: Request, call_next):
     return await call_next(request)
 
 # ==========================================
-# 5. API 라우터 (CORS 리다이렉트 차단 버그 완치 버전)
+# 5. API 라우터 (CORS preflight 및 리다이렉트 오차 완치 버전)
 # ==========================================
 @app.get("/")
 def read_root():
@@ -213,14 +199,15 @@ class PredictRequest(BaseModel):
     hla_sequence: str
     peptide_sequence: str
 
-# ✨ [CORS 블로킹 완치] 슬래시가 붙은 주소와 안 붙은 주소 모두를 독립 라우터로 승인합니다.
+# 🚨 슬래시가 붙어오든 안 붙어오든 리다이렉트(301/302) 없이 즉시 POST 연산을 처리하도록 2중 데코레이터 선언
 @app.post("/api/epitope/predict")
-@app.post("/api/epitope/predict/")  # 끝에 슬래시가 붙어 전송되어도 301 리다이렉트 없이 즉시 처리
+@app.post("/api/epitope/predict/")
 async def predict_epitope(data: PredictRequest):
     if not data.hla_sequence or not data.peptide_sequence:
-        raise HTTPException(status_code=400, detail="Missing required fields")
+        raise HTTPException(status_code=400, detail="Required fields are missing.")
         
     try:
+        # 통합 데이터베이스 사전 역전환 가동
         real_hla_sequence = manager.convert_to_sequence(data.hla_sequence)
         pep_tokens = manager.tokenize_peptide(data.peptide_sequence)
         
@@ -236,6 +223,7 @@ async def predict_epitope(data: PredictRequest):
             
         structural_stability = "VERY HIGH" if tcr_binding_probability >= 0.85 else "HIGH" if tcr_binding_probability >= 0.6 else "MEDIUM"
         
+        # 프론트엔드가 요구하는 6가지 글로벌 스펙 산출물 일치화 리턴
         return {
             "status": "success",
             "generated_alpha": "CAVPSGAGSYQLTF",
@@ -246,8 +234,8 @@ async def predict_epitope(data: PredictRequest):
             "stability": structural_stability
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Inference failed: {str(e)}")
-        
+        raise HTTPException(status_code=500, detail=f"Inference Engine Crash: {str(e)}")
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run("fixed_api_server:app", host="0.0.0.0", port=port)
