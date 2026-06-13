@@ -183,9 +183,9 @@ async def predict_epitope(data: PredictRequest):
         raise HTTPException(status_code=500, detail=f"Inference failed: {str(e)}")
 
 # ==========================================
-# 6. 인프라 포트 구동 블록
+# 6. 서버 인프라 포트 구동 블록 (포트 스캔 에러 완치 버전)
 # ==========================================
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8000))
+    # Render 클라우드가 지정해 주는 동적 포트 번호를 1순위로 강제 가져옵니다.
+    port = int(os.environ.get("PORT", 10000))
     uvicorn.run("fixed_api_server:app", host="0.0.0.0", port=port)
-
