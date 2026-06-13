@@ -78,62 +78,51 @@ if HAS_TORCH:
 # ==========================================
 class DatabaseTemplateManager:
     def __init__(self):
-        self.db_df = None
         self.hla_mapping = {}
-        self.load_user_database()
+        self.load_integrated_json()
         
-    def load_user_database(self):
-        print("⏳ 사용자가 모아둔 데이터베이스 파일 로드 시도 중...")
-        
-        # 1. 프로젝트 폴더 내 database.csv, database.xlsx, database.json 등 다양한 확장자 자동 탐색
-        possible_files = ["database.csv", "database.xlsx", "database.json", "database.txt"]
-        target_file = None
-        
-        for f_name in possible_files:
-            if os.path.exists(f_name):
-                target_file = f_name
-                break
-                
-        # 2. 수집된 실제 데이터베이스 파일 판다스로 파싱 및 매핑
-        if target_file and HAS_PANDAS:
+    def load_integrated_json(self):
+        target_file = "hla_database.json"
+        if os.path.exists(target_file):
             try:
-                if target_file.endswith('.csv') or target_file.endswith('.txt'):
-                    self.db_df = pd.read_csv(target_file)
-                elif target_file.endswith('.xlsx'):
-                    self.db_df = pd.read_excel(target_file)
-                elif target_file.endswith('.json'):
-                    self.db_df = pd.read_json(target_file)
-                print(f"✅ [DATABASE LINK] '{target_file}' 데이터를 성공적으로 뼈대 엔진에 로드했습니다! (총 {len(self.db_df)}행)")
-                
-                # 데이터베이스 내에 HLA 명칭과 서열 컬럼이 존재할 경우 실시간 매핑 사전 구축
-                # 사용자분의 대소문자 및 컬럼명 유연성 확보 (hla, allele, sequence 등 탐색)
-                cols = [c.lower() for c in self.db_df.columns]
-                hla_col, seq_col = None, None
-                for c in self.db_df.columns:
-                    if 'hla' in c.lower() or 'allele' in c.lower(): hla_col = c
-                    if 'seq' in c.lower() or 'protein' in c.lower() or 'amino' in c.lower(): seq_col = c
-                
-                if hla_col and seq_col:
-                    for _, row in self.db_df.iterrows():
-                        key = str(row[hla_col]).strip().upper()
-                        val = str(row[seq_col]).strip().upper()
-                        self.hla_mapping[key] = val
+                with open(target_file, "r", encoding="utf-8") as f:
+                    self.hla_mapping = json.load(f)
+                print(f"✅ [DATABASE LINK] 깃허브 통합 DB 백본 '{target_file}' {len(self.hla_mapping)}개 완료!")
             except Exception as e:
-                print(f"⚠️ 데이터베이스 파일 파싱 중 예외 발생 (기본 백업 데이터 모드로 전환): {e}")
+                print(f"⚠️ 통합 데이터 로드 실패: {e}")
                 
-        # 3. 만약 폴더에 아직 database 파일이 없거나 로드에 실패했을 때 연구가 중단되지 않도록 표준 백업 사전 구비
         if not self.hla_mapping:
-            print("💡 알림: 로컬 database 파일이 없거나 매핑 컬럼을 찾지 못해 내장 면역학 가상 DB 사전을 활성화합니다.")
+            # ==========================================
+# 3. ✨ 통합 데이터베이스 파일(hla_database.json) 자동 로드 매니저
+# ==========================================
+class DatabaseTemplateManager:
+    def __init__(self):
+        self.hla_mapping = {}
+        self.load_integrated_json()
+        
+    def load_integrated_json(self):
+        target_file = "hla_database.json"
+        
+        # 1. 깃허브에 올린 통합 JSON 데이터베이스 파일이 존재하는지 검사
+        if os.path.exists(target_file):
+            try:
+                with open(target_file, "r", encoding="utf-8") as f:
+                    self.hla_mapping = json.load(f)
+                print(f"✅ [DATABASE LINK] 깃허브 통합 DB 백본 '{target_file}' {len(self.hla_mapping)}개 로드 완료!")
+            except Exception as e:
+                print(f"⚠️ 통합 데이터 로드 실패: {e}")
+                
+        # 2. 만약 파일이 없거나 예외 발생 시 인프라 방어용 백업 기본 맵 세팅
+        if not self.hla_mapping:
+            print("💡 알림: hla_database.json 파일이 없어 내장 면역학 가상 DB 사전을 활성화합니다.")
             self.hla_mapping = {
-                "HLA-A*02:01": "GSHSMRYFYTAVSRPGRGEPRFIAVGYVDDTQFVRFDSDAASQRMEPRAPWIEQEGPEYWDGETRKVKAHSQTHRVDLGTLRGYYNQSEAGSHTVQRMYGCDVGSDWRFLRGYHQYAYDGKDYIALKEDLRSWTAADMAAQTTKHKWEAAHVAEQLRAYLEGTCVEWLRRYLENGKETLQRTDAPKTHMTHHAVSDHEATLRCWALSFYPAEITLTWQRDGEDQTQDTELVETRPAGDGTFQKWAAVVVPSGQEQRYTCHVQHEGLPKPLTLRWE",
-                "HLA-A*01:01": "GSHSMRYFTSAMSRPGRGEPRFIAVGYVDDTQFVRFDSDAASQRMEPRAPWIEQEGPEYWDQETRNVKAQSQTDRVDLGTLRGYYNQSEAGSHTIQIMYGCDVGPDGRFLRGYRQDAYDGKDYIALNEDLRSWTAADMAAQITKRKWEAVHAAEQRRAYLEGTCVEWLRRYLENGKETLQRTDPPKTHMTHHPISDHEATLRCWALSFYPAEITLTWQRDGEDQTQDTELVETRPAGDGTFQKWAAVVVPSGEEQRYTCHVQHEGLPKPLTLRWE"
+                "HLA-A*02:01": "GSHSMRYFYTAVSRPGRGEPRFIAVGYVDDTQFVRFDSDAASQRMEPRAPWIEQEGPEYWDGETRKVKAHSQTHRVDLGTLRGYYNQSEAGSHTVQRMYGCDVGSDWRFLRGYHQYAYDGKDYIALKEDLRSWTAADMAAQTTKHKWEAAHVAEQLRAYLEGTCVEWLRRYLENGKETLQRTDAPKTHMTHHAVSDHEATLRCWALSFYPAEITLTWQRDGEDQTQDTELVETRPAGDGTFQKWAAVVVPSGQEQRYTCHVQHEGLPKPLTLRWE"
             }
 
-    # 입력값이 알릴 명칭(Database Key)이면 연동된 진짜 서열을 찾고, 처음부터 긴 서열을 넣었으면 그대로 리턴하는 지능형 전처리 함수
+    # 입력값이 알릴 명칭이면 연동된 진짜 서열을 찾고, 처음부터 긴 서열을 넣었으면 그대로 리턴하는 함수
     def convert_to_sequence(self, input_str: str) -> str:
         clean_input = input_str.strip().upper().replace(" ", "")
         
-        # 1. 모아두신 내 database 매핑 사전에서 완전 일치 혹은 부분 일치 검색
         if clean_input in self.hla_mapping:
             return self.hla_mapping[clean_input]
             
@@ -141,7 +130,6 @@ class DatabaseTemplateManager:
             if clean_input in key or key in clean_input:
                 return seq
                 
-        # 2. 데이터베이스에 명칭이 없다면, 사용자가 이미 직접 가공한 '진짜 긴 아미노산 서열 패턴'을 입력했다고 인지
         return clean_input
 
     def tokenize_peptide(self, peptide_str: str):
@@ -158,7 +146,36 @@ class DatabaseTemplateManager:
             features = [[0.0] * 20]
         return torch.tensor(features, dtype=torch.float) if HAS_TORCH else features
 
-manager = DatabaseTemplateManager()
+    # 입력값이 알릴 명칭(Database Key)이면 연동된 진짜 서열을 찾고, 처음부터 긴 서열을 넣었으면 그대로 리턴하는 지능형 전처리 함수
+    def convert_to_sequence(self, input_str: str) -> str:
+        clean_input = input_str.strip().upper().replace(" ", "")
+            
+            # 1. 모아두신 내 database 매핑 사전에서 완전 일치 혹은 부분 일치 검색
+            if clean_input in self.hla_mapping:
+                return self.hla_mapping[clean_input]
+                
+            for key, seq in self.hla_mapping.items():
+                if clean_input in key or key in clean_input:
+                    return seq
+                    
+            # 2. 데이터베이스에 명칭이 없다면, 사용자가 이미 직접 가공한 '진짜 긴 아미노산 서열 패턴'을 입력했다고 인지
+            return clean_input
+    
+        def tokenize_peptide(self, peptide_str: str):
+            features = []
+            aa_list = "ACDEFGHIKLMNPQRSTVWY"
+            aa_map = {aa: i for i, aa in enumerate(aa_list)}
+            
+            for aa in peptide_str.upper().strip():
+                one_hot = [0.0] * 20
+                if aa in aa_map:
+                    one_hot[aa_map[aa]] = 1.0
+                features.append(one_hot)
+            if not features:
+                features = [[0.0] * 20]
+            return torch.tensor(features, dtype=torch.float) if HAS_TORCH else features
+    
+    manager = DatabaseTemplateManager()
 
 # ==========================================
 # 4. 정적 파일 및 런타임 인프라 선언
