@@ -199,12 +199,13 @@ async def redirect_trailing_slash(request: Request, call_next):
     return await call_next(request)
 
 # ==========================================
-# 5. API 라우터 (이 부분이 정확히 존재해야 405 에러가 나지 않습니다!)
+# 5. API 라우터 (404, 405 에러를 원천 차단하는 표준 규격)
 # ==========================================
 @app.get("/")
 def read_root():
     return {"status": "online", "service": "ImmuneNexus TCR GNN Core"}
 
+# 웹사이트의 엔진 점검 버튼과 연동되는 주소 (GET 방식)
 @app.get("/api/health")
 def health_check():
     return {"status": "healthy", "service": "ImmuneNexus"}
@@ -214,7 +215,8 @@ class PredictRequest(BaseModel):
     hla_sequence: str
     peptide_sequence: str
 
-# ✨ @app.post 방식과 주소가 완벽히 일치해야 405 Not Allowed가 완치됩니다.
+# ✨ [가장 중요] 반드시 @app.post 방식이어야 405 에러가 나지 않으며, 
+# 주소 명칭이 토씨 하나 안 틀리고 똑같아야 404 에러가 발생하지 않습니다!
 @app.post("/api/epitope/predict")
 async def predict_epitope(data: PredictRequest):
     if not data.hla_sequence or not data.peptide_sequence:
@@ -238,7 +240,7 @@ async def predict_epitope(data: PredictRequest):
             
         structural_stability = "VERY HIGH" if tcr_binding_probability >= 0.85 else "HIGH" if tcr_binding_probability >= 0.6 else "MEDIUM"
         
-        # 프론트엔드(index.html)에서 요구하는 6개의 최종 디자인 산출물 리턴
+        # 기존 5개 UI 박스에 순서대로 꽂힐 최종 6개 산출물 스트림 전송
         return {
             "status": "success",
             "generated_alpha": "CAVPSGAGSYQLTF",
