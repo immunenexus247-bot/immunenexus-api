@@ -96,17 +96,19 @@ async function run() {
     document.getElementById("sv").innerText = "Computing Thermodynamic Equilibrium Grade...";
 
     try {
-        // 끝부분 슬래시 정밀 동기화를 통해 405 및 리다이렉트 CORS 보안 차단 완벽 완화
-        const res = await fetch(`${API_URL}/api/epitope/predict/`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                hla_sequence: h,      // 백엔드 PredictInput 모델과 정확히 일치시킴
-                peptide_sequence: p   // 백엔드 PredictInput 모델과 정확히 일치시킴
-            })
-        });
+        // 1. 끝에 슬래시 없는 경로 사용
+const res = await fetch(`${API_URL}/api/epitope/predict`, {
+    method: "POST",
+    headers: {
+        // 🌟 json 대신 text/plain을 쓰면 브라우저가 까다로운 CORS 사전 검사를 생략하고 곧바로 데이터를 쏩니다!
+        "Content-Type": "text/plain"  
+    },
+    body: JSON.stringify({
+        hla_sequence: h,
+        peptide_sequence: p
+    })
+});
+
 
         if (!res.ok) throw new Error("Inference Server Error");
         const data = await res.json();
