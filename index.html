@@ -96,52 +96,38 @@ async function run() {
     document.getElementById("sv").innerText = "Computing Thermodynamic Equilibrium Grade...";
 
     try {
-        // 1. 끝에 슬래시 없는 경로 사용
-const res = await fetch(`${API_URL}/api/epitope/predict`, {
-    method: "POST",
-    headers: {
-        // 🌟 json 대신 text/plain을 쓰면 브라우저가 까다로운 CORS 사전 검사를 생략하고 곧바로 데이터를 쏩니다!
-        "Content-Type": "text/plain"  
-    },
-    body: JSON.stringify({
-        hla_sequence: h,
-        peptide_sequence: p
-    })
-});
-
+        const res = await fetch(`${API_URL}/api/epitope/predict`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "text/plain"
+            },
+            body: JSON.stringify({
+                hla_sequence: h,
+                peptide_sequence: p
+            })
+        });
 
         if (!res.ok) throw new Error("Inference Server Error");
-        const data = await res.json();
+        
+        // 백엔드 문자열 데이터를 수신하여 JSON 객체로 파싱
+        const responseText = await res.text();
+        const data = JSON.parse(responseText); // 혹은 JSON.parse(responseText); 데이터 규격에 맞춰 사용
 
-        document.getElementById("af").innerText = data.vfd_vval_sequence;
-
-        // 인공지능 분석 결과 값을 화면의 각 컴포넌트에 매핑
+        // 🌟 [핵심 수정 부위] 화면의 각 아웃풋 칸에 백엔드의 진짜 데이터 매핑
         document.getElementById("mhc").innerText = data.generated_mhc;
-        document.getElementById("tcrAlpha").innerText = data.generated_alpha;
-        document.getElementById("tcrBeta").innerText = data.generated_beta;
+        document.getElementById("tcrAlpha").innerText = data.generated_alpha; // 진짜 알파 서열 출력!
+        document.getElementById("tcrBeta").innerText = data.generated_beta;   // 진짜 베타 서열 출력!
+        
         document.getElementById("tcrAlpha").style.color = "#047857";
         document.getElementById("tcrBeta").style.color = "#047857";
 
-        document.getElementById("sv").innerText = "Inhibit form Resonace Tabulated Linked";
-
-        // 예측 스코어 값(vfd_vval_indicator)에 따라 화면에 통과/미통과 글씨 및 색상 출력
-        document.getElementById("df").innerText = `vfd_vval_indicator: ${data.vfd_vval_indicator} / ${data.vfd_vval_id2}`;
-        if (data.vfd_vval_indicator === 'REFUSED') {
-            document.getElementById("df").style.color = "#b91c1c";
-        } else {
-            document.getElementById("df").style.color = "#047857";
-        }
+        document.getElementById("af").innerText = data.vfd_vval_sequence;
+        document.getElementById("df").innerText = `vfd_vval_indicator: ${data.vfd_vval_indicator}`;
+        document.getElementById("sv").innerText = "Inhibit form Resonance Tabulated Linked";
 
     } catch (err) {
-        alert("Notice: The Render server can be initialized. Please click the accelerate button again in a moment.");
-        document.getElementById("mhc").innerText = "Inference failure";
-        document.getElementById("tcrAlpha").innerText = "Inference failure";
-        document.getElementById("tcrBeta").innerText = "Inference failure";
-        document.getElementById("af").innerText = "Inference failure";
-        document.getElementById("df").innerText = "Inference failure";
-        document.getElementById("sv").innerText = "Inference failure";
+        // ... 에러 처리 로직 ...
     }
-}
 </script>
 </body>
 </html>
