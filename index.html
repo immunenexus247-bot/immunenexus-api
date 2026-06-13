@@ -28,18 +28,14 @@
     </div>
 
     <div class="grid">
-        <!-- 왼쪽 패널: 분석 조건 입력 (요청 사항 반영 구역) -->
         <div class="panel">
             <h3>🛸 Analysis Condition Input</h3>
             <hr style="margin: 15px 0; border: 0; border-top: 1px solid #eee;">
-            <!-- ✨ 1. Peptide Sequence -> Antigen Peptide Sequence 교정 완료 -->
             <div class="group"><label>Antigen Peptide Sequence</label><input type="text" id="pin" value="SIINFEKL"></div>
-            <!-- ✨ 2. HLA Allele Type -> HLA Allele Type (MHC) 교정 완료 -->
             <div class="group"><label>HLA Allele Type (MHC)</label><input type="text" id="hin" value="HLA-A*02:01"></div>
             <button class="btn" onclick="run()">⚡ Accelerate Structural Model Analysis</button>
         </div>
 
-        <!-- 오른쪽 패널: 산출물 출력부 (기존 완벽 세팅 유지) -->
         <div class="panel">
             <h3>🧬 Structural Model Output</h3>
             <hr style="margin: 15px 0; border: 0; border-top: 1px solid #eee;">
@@ -52,7 +48,6 @@
         </div>
     </div>
 
-    <!-- 법적 고지 패널 (컴플라이언스 유지) -->
     <div class="disclaimer-panel">
         <h4>⚖️ Legal Disclaimer & Terms of Use</h4>
         <p>Welcome to ImmuneNexus Central Hub. By using this free open-source AI platform, you acknowledge and agree to the following legal terms:</p>
@@ -85,7 +80,8 @@
         document.getElementById("sv").innerText = "Computing 3D displacement stability grade...";
 
         try {
-            const res = await fetch(API_URL + "/api/epitope/predict", {
+            // 🚨 리다이렉트 강제 방지를 위해 끝부분에 슬래시(/) 명시적 추가 동기화
+            const res = await fetch(API_URL + "/api/epitope/predict/", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
