@@ -60,25 +60,6 @@ if HAS_TORCH:
         print(f"⚠️ 가중치 로드 예외 발생: {e}")
 
 # ==========================================
-# 3. ✨ 모아두신 데이터베이스 파일(database) 자동 로드 매니저
-# ==========================================
-class DatabaseTemplateManager:
-    def __init__(self):
-        self.hla_mapping = {}
-        self.load_integrated_json()
-        
-    def load_integrated_json(self):
-        target_file = "hla_database.json"
-        if os.path.exists(target_file):
-            try:
-                with open(target_file, "r", encoding="utf-8") as f:
-                    self.hla_mapping = json.load(f)
-                print(f"✅ [DATABASE LINK] 깃허브 통합 DB 백본 '{target_file}' {len(self.hla_mapping)}개 완료!")
-            except Exception as e:
-                print(f"⚠️ 통합 데이터 로드 실패: {e}")
-                
-        if not self.hla_mapping:
-            # ==========================================
 # 3. ✨ 통합 데이터베이스 파일(hla_database.json) 자동 로드 매니저
 # ==========================================
 class DatabaseTemplateManager:
@@ -118,6 +99,7 @@ class DatabaseTemplateManager:
                 
         return clean_input
 
+    # 펩타이드 아미노산 토큰화 전처리 함수
     def tokenize_peptide(self, peptide_str: str):
         features = []
         aa_list = "ACDEFGHIKLMNPQRSTVWY"
@@ -132,49 +114,21 @@ class DatabaseTemplateManager:
             features = [[0.0] * 20]
         return torch.tensor(features, dtype=torch.float) if HAS_TORCH else features
 
-    # 입력값이 알릴 명칭(Database Key)이면 연동된 진짜 서열을 찾고, 처음부터 긴 서열을 넣었으면 그대로 리턴하는 지능형 전처리 함수
-    def convert_to_sequence(self, input_str: str) -> str:
-        clean_input = input_str.strip().upper().replace(" ", "")
-            
-            # 1. 모아두신 내 database 매핑 사전에서 완전 일치 혹은 부분 일치 검색
-            if clean_input in self.hla_mapping:
-                return self.hla_mapping[clean_input]
-                
-            for key, seq in self.hla_mapping.items():
-                if clean_input in key or key in clean_input:
-                    return seq
-                    
-            # 2. 데이터베이스에 명칭이 없다면, 사용자가 이미 직접 가공한 '진짜 긴 아미노산 서열 패턴'을 입력했다고 인지
-            return clean_input
-    
-        def tokenize_peptide(self, peptide_str: str):
-            features = []
-            aa_list = "ACDEFGHIKLMNPQRSTVWY"
-            aa_map = {aa: i for i, aa in enumerate(aa_list)}
-            
-            for aa in peptide_str.upper().strip():
-                one_hot = [0.0] * 20
-                if aa in aa_map:
-                    one_hot[aa_map[aa]] = 1.0
-                features.append(one_hot)
-            if not features:
-                features = [[0.0] * 20]
-            return torch.tensor(features, dtype=torch.float) if HAS_TORCH else features
-    
-    manager = DatabaseTemplateManager()
+# 매니저 객체 인스턴스 최종 생성 (이 줄은 클래스 밖 맨 왼쪽에 붙여서 선언되어야 합니다)
+manager = DatabaseTemplateManager()
 
 # ==========================================
 # 4. 정적 파일 및 미들웨어 리다이렉트 설정
 # ==========================================
 static_dir = "static"
 if not os.path.exists(static_dir):
-    os.makedirs(static_dir)  # 정확히 공백 4칸(들여쓰기)을 맞춘 상태입니다.
+    os.makedirs(static_dir)
 
 try:
     app.mount("/static", StaticFiles(directory=static_dir), name="static")
 except Exception as e:
     print(f"[WARNING] Static files mount failed: {e}")
-
+ㄴ
 # ==========================================
 # 5. API 라우터 (405 및 리다이렉트 차단 완치 버전)
 # ==========================================
