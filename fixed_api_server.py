@@ -114,7 +114,7 @@ class DatabaseTemplateManager:
             features = [[0.0] * 20]
         return torch.tensor(features, dtype=torch.float) if HAS_TORCH else features
 
-# 매니저 객체 인스턴스 최종 생성 (이 줄은 클래스 밖 맨 왼쪽에 붙여서 선언되어야 합니다)
+# 매니저 객체 인스턴스 최종 생성
 manager = DatabaseTemplateManager()
 
 # ==========================================
@@ -128,7 +128,7 @@ try:
     app.mount("/static", StaticFiles(directory=static_dir), name="static")
 except Exception as e:
     print(f"[WARNING] Static files mount failed: {e}")
-ㄴ
+
 # ==========================================
 # 5. API 라우터 (405 및 리다이렉트 차단 완치 버전)
 # ==========================================
