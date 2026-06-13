@@ -4,7 +4,7 @@ from fastapi import FastAPI, Request, Response
 from fastapi.responses import PlainTextResponse
 from fastapi.middleware.cors import CORSMiddleware
 
-# 자동 리다이렉트 간섭 방지
+# 자동 리다이렉트 간섭을 꺼서 주소 오차 문제를 원천 차단합니다.
 app = FastAPI(redirect_slashes=False)
 
 # 허용할 프론트엔드 도메인 주소 (끝에 슬래시 절대 없음)
@@ -29,6 +29,8 @@ async def add_cors_header(request: Request, call_next):
         origin = request.headers.get("Origin")
         if origin in origins:
             response.headers["Access-Control-Allow-Origin"] = origin
+        else:
+            response.headers["Access-Control-Allow-Origin"] = "https://vercel.app"
         response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
         response.headers["Access-Control-Allow-Headers"] = "*"
         response.headers["Access-Control-Allow-Credentials"] = "true"
@@ -40,7 +42,7 @@ async def add_cors_header(request: Request, call_next):
     return response
 
 
-# 🌟 [AI 결합도 분석 및 다각도 다이내믹 수치 추론 엔진]
+# 🌟 [AI 결합도 분석 및 다각도 다이내믹 추론 엔드포인트]
 @app.post("/api/epitope/predict")
 @app.post("/api/epitope/predict/")
 async def predict(request: Request):
@@ -89,16 +91,30 @@ async def predict(request: Request):
         embedding_density = abs(calculated_energy) * 12.5
         features_numerical_output = f"Dimension: {tensor_dimension} / Density Maxima: {embedding_density:.2f} σ / Vector Count: {p_len + h_len}"
         
-        # 🌟 [요청 사항 반영] Safety Verdict의 등급을 먼저 표시하고, 정량적 수치 데이터를 이어붙입니다.
+        # Safety Verdict의 등급 정량화 데이터 수식 도출
         safety_grade = "HIGHLY_STABLE" if calculated_energy <= -8.5 else "STABLE"
-        # 열역학적 안정성 지수(Thermodynamic Index)를 실시간 결합 세기에 비례하도록 수식화하여 수치 출력
         thermodynamic_index = (abs(calculated_energy) * 1.4) + (predicted_binding_score * 5.5)
         safety_verdict_text = f"[{safety_grade}] / Thermodynamic Index: {thermodynamic_index:.2f} / Inhibit Rank: {p_len * 2.5:.1f}"
         
         designed_alpha_cdr3 = f"CAV{peptide_seq[:3]}DNYQLIW"  
         designed_beta_cdr3 = f"CASS{peptide_seq[-4:]}NTEAFF" 
 
+        # 🌟 구조 매찰 교정: 모든 연산 결과 데이터셋을 try 블록 안전망 안에서 안전하게 빌드하여 리턴합니다.
+        result_data = {
+            "status": "success",
+            "vfd_vval_sequence": features_numerical_output, 
+            "generated_mhc": real_mhc_sequence,            
+            "generated_alpha": designed_alpha_cdr3,         
+            "generated_beta": designed_beta_cdr3,           
+            "vfd_vval_indicator": "APPROVED" if predicted_binding_score >= 0.8 else "PROVISIONAL",
+            "vfd_vval_id2": f"에너지: {calculated_energy:.2f} kcal/mol / 신뢰도: {predicted_binding_score:.3f}",
+            "vval_id2": f"에너지: {calculated_energy:.2f} kcal/mol / 신뢰도: {predicted_binding_score:.3f}",
+            "sv_text": safety_verdict_text                 
+        }
+        return PlainTextResponse(content=json.dumps(result_data), status_code=200)
+
     except Exception as e:
+        # 비상 에러 대응 포맷 주머니 생성 및 리턴 (프론트엔드 크래시 원천 차단)
         error_data = {
             "status": "error",
             "message": f"AI Generation Inference failed: {str(e)}",
@@ -106,24 +122,12 @@ async def predict(request: Request):
             "generated_mhc": "Inference failure",
             "generated_alpha": "Inference failure",
             "generated_beta": "Inference failure",
-            "vfd_vval_indicator": "REFUSED"
+            "vfd_vval_indicator": "REFUSED",
+            "vfd_vval_id2": "Inference failed",
+            "vval_id2": "Inference failed",
+            "sv_text": "Inference failure"
         }
         return PlainTextResponse(content=json.dumps(error_data), status_code=200)
-    
-    # 4) 매핑이 완료된 최종 구조화 데이터 전송
-    result_data = {
-        "status": "success",
-        "vfd_vval_sequence": features_numerical_output, 
-        "generated_mhc": real_mhc_sequence,            
-        "generated_alpha": designed_alpha_cdr3,         
-        "generated_beta": designed_beta_cdr3,           
-        "vfd_vval_indicator": "APPROVED" if predicted_binding_score >= 0.8 else "PROVISIONAL",
-        "vfd_vval_id2": f"에너지: {calculated_energy:.2f} kcal/mol / 신뢰도: {predicted_binding_score:.3f}",
-        "vval_id2": f"에너지: {calculated_energy:.2f} kcal/mol / 신뢰도: {predicted_binding_score:.3f}",
-        "sv_text": safety_verdict_text                 # 🌟 정렬 교정된 안전성 평가 등급 및 수치 데이터셋 바인딩
-    }
-    
-    return PlainTextResponse(content=json.dumps(result_data), status_code=200)
 
 @app.get("/")
 def read_root():
