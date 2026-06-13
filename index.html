@@ -48,6 +48,7 @@
         </div>
     </div>
 
+    <!-- 법적 면책 조항 컴플라이언스 패널 -->
     <div class="disclaimer-panel">
         <h4>⚖️ Legal Disclaimer & Terms of Use</h4>
         <p>Welcome to ImmuneNexus Central Hub. By using this free open-source AI platform, you acknowledge and agree to the following legal terms:</p>
@@ -61,11 +62,11 @@
 </div>
 
 <script>
-    const API_URL = "https://onrender.com";
+    const API_URL = "https://immune-nexus-server.onrender.com";
 
     async function run() {
         const p = document.getElementById("pin").value.trim();
-        const h = document.getElementById("hin").value.trim();
+        const h = document.getElementById("hin").value.strip ? document.getElementById("hin").value.strip() : document.getElementById("hin").value.trim();
 
         if (!p || !h) {
             alert("Please enter both Peptide and HLA data.");
@@ -80,7 +81,7 @@
         document.getElementById("sv").innerText = "Computing 3D displacement stability grade...";
 
         try {
-            // 🚨 리다이렉트 강제 방지를 위해 끝부분에 슬래시(/) 명시적 추가 동기화
+            // 주소 꼬임 방지를 위해 끝부분에 슬래시(/) 명시적 배치
             const res = await fetch(API_URL + "/api/epitope/predict/", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
