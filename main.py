@@ -21,10 +21,10 @@ app.add_middleware(
 class PredictInput(BaseModel):
     data: str
 
-# 2. 에러가 나던 predict 엔드포인트
-@app.post("/predict/")
+# main.py 파일 수정 (프론트엔드 주소에 맞춤)
+@app.post("/api/epitope/predict/")
 async def predict(item: PredictInput):
-    # 이곳에 기존 예측(predict) 로직을 넣으시면 됩니다.
+    # 기존 예측 로직
     return {"status": "success", "received": item.data}
 
 @app.get("/")
