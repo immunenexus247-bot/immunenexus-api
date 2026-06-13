@@ -3,7 +3,6 @@ uvicorn
 pydantic
 pandas
 --find-links https://pytorch.org/whl/cpu
-torch==2.2.1+cpu
+torch
 numpy
 requests
-
