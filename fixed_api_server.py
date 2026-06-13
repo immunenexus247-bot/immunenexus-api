@@ -185,7 +185,7 @@ async def redirect_trailing_slash(request: Request, call_next):
     return await call_next(request)
 
 # ==========================================
-# 5. API 라우터 (CORS preflight 및 리다이렉트 오차 완치 버전)
+# 5. API 라우터 (405 및 리다이렉트 차단 완치 버전)
 # ==========================================
 @app.get("/")
 def read_root():
@@ -199,18 +199,19 @@ class PredictRequest(BaseModel):
     hla_sequence: str
     peptide_sequence: str
 
-# 🚨 슬래시가 붙어오든 안 붙어오든 리다이렉트(301/302) 없이 즉시 POST 연산을 처리하도록 2중 데코레이터 선언
+# ✨ [405 에러 완치 핵심] 슬래시가 붙은 주소와 안 붙은 주소 모두를 독립 라우터로 완벽 승인합니다.
 @app.post("/api/epitope/predict")
-@app.post("/api/epitope/predict/")
+@app.post("/api/epitope/predict/")  # 끝에 슬래시(/)가 붙어 전송되어도 거절 없이 즉시 처리
 async def predict_epitope(data: PredictRequest):
     if not data.hla_sequence or not data.peptide_sequence:
         raise HTTPException(status_code=400, detail="Required fields are missing.")
         
     try:
-        # 통합 데이터베이스 사전 역전환 가동
+        # 통합 데이터베이스 파일에서 실시간 명칭 ➔ 서열 전환 실행
         real_hla_sequence = manager.convert_to_sequence(data.hla_sequence)
         pep_tokens = manager.tokenize_peptide(data.peptide_sequence)
         
+        # PyTorch GNN 추론 연산 가동
         if HAS_TORCH and 'model' in globals() and model is not None:
             with torch.no_grad():
                 output = model(pep_tokens)
@@ -223,7 +224,7 @@ async def predict_epitope(data: PredictRequest):
             
         structural_stability = "VERY HIGH" if tcr_binding_probability >= 0.85 else "HIGH" if tcr_binding_probability >= 0.6 else "MEDIUM"
         
-        # 프론트엔드가 요구하는 6가지 글로벌 스펙 산출물 일치화 리턴
+        # 프론트엔드가 요구하는 6가지 글로벌 스펙 산출물 리턴
         return {
             "status": "success",
             "generated_alpha": "CAVPSGAGSYQLTF",
@@ -234,9 +235,12 @@ async def predict_epitope(data: PredictRequest):
             "stability": structural_stability
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Inference Engine Crash: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Inference failed: {str(e)}")
 
+# ==========================================
+# 6. 인프라 포트 구동 블록
+# ==========================================
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run("fixed_api_server:app", host="0.0.0.0", port=port)
-    
+
