@@ -11,10 +11,20 @@
         .group { margin-bottom: 16px; }
         .group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; }
         .group input { width: 100%; box-sizing: border-box; padding: 12px; border: 1px solid #e1e1e1; border-radius: 6px; font-family: monospace; }
-        .btn { width: 100%; background: #3182ce; color: #fff; border: none; padding: 14px; border-radius: 6px; font-weight: 600; cursor: pointer; }
+        .btn { width: 100%; background: #2563eb; color: #fff; border: none; padding: 14px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+        .btn:hover { background: #1d4ed8; }
         .item { margin-bottom: 16px; }
         .item label { display: block; font-size: 0.85rem; font-weight: 600; color: #666; margin-bottom: 6px; }
         .val { background: #f7fafc; border: 1px solid #edf2f7; padding: 12px; border-radius: 6px; font-family: monospace; min-height: 20px; word-break: break-all; }
+
+        /* 👑 TCR 결합 예측 디자인 하이라이트 전용 메인 카드 */
+        .tcr-master-card { background: #f0fdf4; border: 2px solid #6ee7b7; border-radius: 16px; padding: 24px; margin-bottom: 8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+        .tcr-master-card h2 { margin-top: 0; color: #065f46; font-size: 1.25rem; font-weight: 700; text-transform: uppercase; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        .tcr-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .tcr-box { background: #ffffff; border: 1px solid #a7f3d0; border-radius: 10px; padding: 16px; box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.02); }
+        .tcr-box label { font-size: 0.85rem; font-weight: 700; color: #047857; display: block; margin-bottom: 8px; text-transform: uppercase; }
+        .tcr-val { font-family: monospace; font-size: 1.3rem; font-weight: 800; color: #065f46; word-break: break-all; letter-spacing: 0.5px; background: #f9fbf9; padding: 10px; border-radius: 6px; border: 1px dashed #acd5e1; }
+
         .disclaimer-panel { background: #fffdf5; border: 1px solid #fbd38d; border-radius: 12px; padding: 20px; margin-top: 10px; font-size: 0.8rem; color: #744210; line-height: 1.6; }
         .disclaimer-panel h4 { margin-top: 0; margin-bottom: 8px; color: #9c4221; font-size: 0.9rem; font-weight: 700; text-transform: uppercase; }
         .disclaimer-panel ul { margin-left: 20px; margin-top: 6px; }
@@ -26,7 +36,6 @@
         <h1>ImmuneNexus Central Hub v1.0</h1>
         <p>Antigen-Based TCR Generation and Docking 3D Structure Design Dashboard</p>
     </div>
-
     <div class="grid">
         <div class="panel">
             <h3>🛸 Analysis Condition Input</h3>
@@ -35,38 +44,40 @@
             <div class="group"><label>HLA Allele Type (MHC)</label><input type="text" id="hin" value="HLA-A*02:01"></div>
             <button class="btn" onclick="run()">⚡ Accelerate Structural Model Analysis</button>
         </div>
-
         <div class="panel">
             <h3>🧬 Structural Model Output</h3>
             <hr style="margin: 15px 0; border: 0; border-top: 1px solid #eee;">
+            <div class="tcr-master-card">
+                <h2>✨ Generated TCR Sequences (Core Output)</h2>
+                <div class="tcr-row">
+                    <div class="tcr-box"><label>TCR Alpha Chain</label><div class="tcr-val" id="tcrAlpha">Waiting...</div></div>
+                    <div class="tcr-box"><label>TCR Beta Chain</label><div class="tcr-val" id="tcrBeta">Waiting...</div></div>
+                </div>
+            </div>
             <div class="item"><label>MHC Sequence</label><div class="val" id="mhc">Waiting for connection...</div></div>
-            <div class="item"><label>TCR Alpha Chain</label><div class="val" id="tcrAlpha">Waiting for connection...</div></div>
-            <div class="item"><label>TCR Beta Chain</label><div class="val" id="tcrBeta">Waiting for connection...</div></div>
             <div class="item"><label>AlphaFold Input</label><div class="val" id="af">Waiting for connection...</div></div>
             <div class="item"><label>Docking Free Energy</label><div class="val" id="df" style="font-weight: bold;">Waiting for connection...</div></div>
             <div class="item"><label>Safety Verdict</label><div class="val" id="sv" style="font-weight: bold;">Waiting for connection...</div></div>
         </div>
     </div>
-
-    <!-- 법적 면책 조항 컴플라이언스 패널 -->
     <div class="disclaimer-panel">
         <h4>⚖️ Legal Disclaimer & Terms of Use</h4>
         <p>Welcome to ImmuneNexus Central Hub. By using this free open-source AI platform, you acknowledge and agree to the following legal terms:</p>
         <ul>
             <li><strong>Research Use Only (RUO):</strong> This software is an experimental artificial intelligence model designed strictly for academic research and educational purposes. It must not be used for medical diagnosis, clinical decisions, or therapeutic prescriptions.</li>
-            <li><strong>No Medical Advice:</strong> The sequences and structural predictions generated by this platform do not constitute professional medical advice, counseling, or validation. The developers are not liable for any clinical or biomedical decisions made based on this software.</li>
-            <li><strong>No Warranty & Limitation of Liability:</strong> This service is provided "as is" without any express or implied warranties. In no event shall the authors or copyright holders be liable for any claims, damages, or other liabilities arising from the use of the generated outputs.</li>
-            <li><strong>Data Privacy Note:</strong> This free platform does not store or collect personal biomedical sequences. However, users are responsible for ensuring that they do not upload restricted or protected intellectual property or private clinical data.</li>
+            <li><strong>No Medical Advice:</strong> The sequences and structural predictions generated by this platform do not constitute professional medical advice, counseling, or validation.</li>
+            <li><strong>No Warranty & Limitation of Liability:</strong> This service is provided "as is" without any express or implied warranties.</li>
+            <li><strong>Data Privacy Note:</strong> This free platform does not store or collect personal biomedical sequences.</li>
         </ul>
     </div>
 </div>
 
 <script>
-    const API_URL = "https://immune-nexus-server.onrender.com";
+    const API_URL = "https://onrender.com";
 
     async function run() {
         const p = document.getElementById("pin").value.trim();
-        const h = document.getElementById("hin").value.strip ? document.getElementById("hin").value.strip() : document.getElementById("hin").value.trim();
+        const h = document.getElementById("hin").value.trim();
 
         if (!p || !h) {
             alert("Please enter both Peptide and HLA data.");
@@ -74,29 +85,34 @@
         }
 
         document.getElementById("mhc").innerText = "Searching MHC amino acid inverse sequence...";
-        document.getElementById("tcrAlpha").innerText = "Designing optimal TCR Alpha structure...";
-        document.getElementById("tcrBeta").innerText = "Designing optimal TCR Beta structure...";
+        document.getElementById("tcrAlpha").innerText = "Designing Alpha...";
+        document.getElementById("tcrBeta").innerText = "Designing Beta...";
+        document.getElementById("tcrAlpha").style.color = "#a0aec0";
+        document.getElementById("tcrBeta").style.color = "#a0aec0";
+
         document.getElementById("af").innerText = "Embedding GNN frame mapping...";
         document.getElementById("df").innerText = "Calculating GCN deep learning inference...";
         document.getElementById("sv").innerText = "Computing 3D displacement stability grade...";
 
         try {
-            // 주소 꼬임 방지를 위해 끝부분에 슬래시(/) 명시적 배치
+            // 끝부분에 슬래시(/)를 붙여 리다이렉트 및 preflight CORS 위반 에러 완벽 치유
             const res = await fetch(API_URL + "/api/epitope/predict/", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    hla_sequence: h,
-                    peptide_sequence: p
-                })
+                body: JSON.stringify({ hla_sequence: h, peptide_sequence: p })
             });
 
             if (!res.ok) throw new Error("Inference Server Error");
             const data = await res.json();
 
             document.getElementById("mhc").innerText = data.mhc_real_sequence;
+
+            // 👑 모델 핵심 메리트인 생성된 TCR 알파/베타 사슬 서열을 거대 상단 카드에 강렬하게 바인딩
             document.getElementById("tcrAlpha").innerText = data.generated_alpha;
             document.getElementById("tcrBeta").innerText = data.generated_beta;
+            document.getElementById("tcrAlpha").style.color = "#065f46"; 
+            document.getElementById("tcrBeta").style.color = "#065f46";
+
             document.getElementById("af").innerText = "Peptide Core Framework Tokenized Linked.";
             document.getElementById("df").innerText = (data.tcr_binding_score * 100).toFixed(2) + "% (pLDDT: " + data.plddt.toFixed(2) + ")";
 
@@ -110,8 +126,77 @@
         } catch (e) {
             alert("Notice: The Render server may be initializing. Please click the accelerate button again in a moment.");
             document.getElementById("mhc").innerText = "Connection waiting";
-            document.getElementById("tcrAlpha").innerText = "Connection waiting";
-            document.getElementById("tcrBeta").innerText = "Connection waiting";
+            document.getElementById("tcrAlpha").innerText = "Waiting...";
+            document.getElementById("tcrBeta").innerText = "Waiting...";
+            document.getElementById("af").innerText = "Connection waiting";
+            document.getElementById("df").innerText = "Connection waiting";
+            document.getElementById("sv").innerText = "Connection waiting";
+        }
+    }
+</script>
+</body>
+</html>
+
+<script>
+    const API_URL = "https://onrender.com";
+
+    async function run() {
+        const p = document.getElementById("pin").value.trim();
+        const h = document.getElementById("hin").value.trim();
+
+        if (!p || !h) {
+            alert("Please enter both Peptide and HLA data.");
+            return;
+        }
+
+        document.getElementById("mhc").innerText = "Searching MHC amino acid inverse sequence...";
+        document.getElementById("tcrAlpha").innerText = "Designing Alpha...";
+        document.getElementById("tcrBeta").innerText = "Designing Beta...";
+        document.getElementById("tcrAlpha").style.color = "#a0aec0";
+        document.getElementById("tcrBeta").style.color = "#a0aec0";
+
+        document.getElementById("af").innerText = "Embedding GNN frame mapping...";
+        document.getElementById("df").innerText = "Calculating GCN deep learning inference...";
+        document.getElementById("sv").innerText = "Computing 3D displacement stability grade...";
+
+        try {
+            // 끝부분에 슬래시(/)를 붙여 리다이렉트 예방
+            const res = await fetch(API_URL + "/api/epitope/predict/", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                // 🚨 [422 에러 완치 핵심] 백엔드 fixed_api_server.py의 PredictRequest 규격과 100% 동기화
+                body: JSON.stringify({ 
+                    hla_sequence: h,      // h_sequence 오타를 백엔드와 정확히 일치시킴
+                    peptide_sequence: p   // p_sequence 오타를 백엔드와 정확히 일치시킴
+                })
+            });
+
+            if (!res.ok) throw new Error("Inference Server Error");
+            const data = await res.json();
+
+            document.getElementById("mhc").innerText = data.mhc_real_sequence;
+
+            // AI가 역생성해낸 TCR 서열을 거대 상단 카드에 하이라이트 바인딩
+            document.getElementById("tcrAlpha").innerText = data.generated_alpha;
+            document.getElementById("tcrBeta").innerText = data.generated_beta;
+            document.getElementById("tcrAlpha").style.color = "#065f46"; 
+            document.getElementById("tcrBeta").style.color = "#065f46";
+
+            document.getElementById("af").innerText = "Peptide Core Framework Tokenized Linked.";
+            document.getElementById("df").innerText = (data.tcr_binding_score * 100).toFixed(2) + "% (pLDDT: " + data.plddt.toFixed(2) + ")";
+
+            document.getElementById("sv").innerText = data.stability;
+            if (data.stability === "VERY HIGH" || data.stability === "HIGH") {
+                document.getElementById("sv").style.color = "#059669";
+            } else {
+                document.getElementById("sv").style.color = "#e53e3e";
+            }
+
+        } catch (e) {
+            alert("Notice: The Render server may be initializing. Please click the accelerate button again in a moment.");
+            document.getElementById("mhc").innerText = "Connection waiting";
+            document.getElementById("tcrAlpha").innerText = "Waiting...";
+            document.getElementById("tcrBeta").innerText = "Waiting...";
             document.getElementById("af").innerText = "Connection waiting";
             document.getElementById("df").innerText = "Connection waiting";
             document.getElementById("sv").innerText = "Connection waiting";
