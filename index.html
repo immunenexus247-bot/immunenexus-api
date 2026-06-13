@@ -40,7 +40,7 @@
 </div>
 
 <script>
-    const API_URL = "https://onrender.com";
+    const API_URL = "https://immune-nexus-server.onrender.com";
 
     async function run() {
         const p = document.getElementById("pin").value.trim();
@@ -70,24 +70,16 @@
             if (!res.ok) throw new Error("서버 추론 장애");
             const data = await res.json();
 
-            // 1. MHC Sequence : 역전환된 긴 서열 출력
             document.getElementById("mhc").innerText = data.mhc_real_sequence;
-
-            // 2. MHC Split Type : AI가 디자인한 최적의 TCR 알파/베타 서열 출력
             document.getElementById("tcr").innerText = "TRA: " + data.generated_alpha + " / TRB: " + data.generated_beta;
-
-            // 3. AlphaFold Input : 펩타이드 연동 프레임 토큰화 완료 메시지 출력
             document.getElementById("af").innerText = "Peptide Core Framework Tokenized Linked.";
-
-            // 4. Docking Free Energy : 최종 결합 예측 점수와 신뢰 점수(pLDDT) 바인딩
             document.getElementById("df").innerText = (data.tcr_binding_score * 100).toFixed(2) + "% (pLDDT: " + data.plddt.toFixed(2) + ")";
 
-            // 5. Safety Verdict : 3D 변위 벡터 안정성 등급 판단 및 폰트 컬러 실시간 변경
             document.getElementById("sv").innerText = data.stability;
             if (data.stability === "VERY HIGH" || data.stability === "HIGH") {
-                document.getElementById("sv").style.color = "#059669"; // 안전 초록색
+                document.getElementById("sv").style.color = "#059669";
             } else {
-                document.getElementById("sv").style.color = "#e53e3e"; // 위험 빨간색
+                document.getElementById("sv").style.color = "#e53e3e";
             }
 
         } catch (e) {
