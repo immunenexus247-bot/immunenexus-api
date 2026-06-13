@@ -55,7 +55,7 @@
                 </div>
             </div>
             <div class="item"><label>MHC Sequence</label><div class="val" id="mhc">Waiting for connection...</div></div>
-            <div class="item"><label>AlphaFold Input</label><div class="val" id="af">Waiting for connection...</div></div>
+            <div class="field-label">Structural Feature Vector</div>class="val" id="af">Waiting for connection...</div></div>
             <div class="item"><label>Docking Free Energy</label><div class="val" id="df" style="font-weight: bold;">Waiting for connection...</div></div>
             <div class="item"><label>Safety Verdict</label><div class="val" id="sv" style="font-weight: bold;">Waiting for connection...</div></div>
         </div>
@@ -123,7 +123,8 @@ async function run() {
         document.getElementById("tcrAlpha").style.color = "#047857";
         document.getElementById("tcrBeta").style.color = "#047857";
 
-        document.getElementById("sv").innerText = data.sv_text || "Inhibit form Resonance Tabulated Linked";
+        // 🌟 131번째 줄 부근 빈 공간에 이 한 줄을 넣어주셔야 정상적인 분석 완료 등급과 수치가 화면에 찍힙니다!
+        document.getElementById("sv").innerText = data.sv_text; || "Inhibit form Resonance Tabulated Linked";
 
         // 4. 에너지 및 확률 스코어 정밀 출력
         const scoreDisplay = data.vfd_vval_id2 || data.vval_id2 || "Inference failed";
