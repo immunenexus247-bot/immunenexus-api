@@ -143,6 +143,7 @@ async function run() {
 
         // 4. 에너지 및 확률 스코어 정밀 출력
         const scoreDisplay = data.vfd_vval_id2 || data.vval_id2 || "Inference failed";
+        // ✅ 수정 후 (양쪽 끝을 백틱 ` 기호로 올바르게 교정)
         document.getElementById("df").innerText = `${data.vfd_vval_indicator} / ${scoreDisplay}`;
         
         if (data.vfd_vval_indicator === 'REFUSED') {
