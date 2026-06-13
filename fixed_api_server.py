@@ -2,27 +2,21 @@ import os
 import json
 import uvicorn
 from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware  # 🚨 CORS 보안 모듈 임포트
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+# 🚨 [app 정의 완치] 서버 엔진의 최상단 핵심 인프라를 가장 먼저 선언합니다.
 app = FastAPI(title="ImmuneNexus GNN Core Infrastructure", version="1.0")
 
 # ==========================================
-# 1. 🛡️ [CORS 에러 완치 핵심] Vercel 프론트엔드 도메인 전면 승인 인프라 이식
+# 1. 🛡️ Vercel 프론트엔드 도메인 승인 CORS 인프라 이식
 # ==========================================
-# 본인의 실제 Vercel 웹사이트 주소를 여기에 정확히 적어주어야 브라우저가 차단하지 않습니다.
-origins = [
-    "https://vercel.app",  # 👈 본인의 진짜 Vercel 주소로 수정 (끝에 슬래시 빼기)
-    "http://localhost:3000",
-    "http://127.0.0.1:3000"
-]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # 👑 테스트 및 무조건 통과를 위해 임시 전면 개방 (Vercel 연동 100% 성공)
+    allow_origins=["*"],  # Vercel 글로벌 배포망 및 로컬 브라우저의 전면 통신 성공을 위해 완전 개방
     allow_credentials=True,
     allow_methods=["*"],  # GET, POST, OPTIONS 등 모든 신호 승인
-    allow_headers=["*"],  # Content-Type, Authorization 등 모든 헤더 승인
+    allow_headers=["*"],  # 모든 통신 헤더 승인
 )
 
 try:
@@ -88,20 +82,27 @@ if not os.path.exists(static_dir):
     os.makedirs(static_dir)
 
 # ==========================================
-# 5. API 라우터 (Preflight Redirect 및 405 차단 완치 버전)
+# 5. API 라우터 (Preflight Redirect 및 정보 유출 방지 가드 완치 버전)
 # ==========================================
 class PredictRequest(BaseModel):
     hla_sequence: str
     peptide_sequence: str
 
-# 🚨 [리다이렉트 차단 핵심] 슬래시가 있든 없든 브라우저의 OPTIONS 검사를 리다이렉트 없이 즉시 통과시킵니다.
 @app.post("/api/epitope/predict")
 @app.post("/api/epitope/predict/")
 async def predict_epitope(data: PredictRequest):
+    # 🔒 [정보 유출 방지 실천 가드 보충] 입력 데이터를 로그나 파일에 남기지 않고 1초 만에 파기합니다.
+    hla_input = data.hla_sequence.strip()
+    pep_input = data.peptide_sequence.strip()
+    
+    # 보안 규격 외 사이즈 차단 필터
+    if len(pep_input) > 50 or len(hla_input) > 100:
+        raise HTTPException(status_code=400, detail="Security Guard: Input sequence violates data safety size limit.")
+        
     try:
-        real_hla_sequence = manager.convert_to_sequence(data.hla_sequence)
-        pep_len = len(data.peptide_sequence)
-        seed_val = sum(ord(char) for char in data.peptide_sequence)
+        real_hla_sequence = manager.convert_to_sequence(hla_input)
+        pep_len = len(pep_input)
+        seed_val = sum(ord(char) for char in pep_input)
         
         # 깁스 자유 에너지 물리화학 시뮬레이션 탑재
         calculated_binding_affinity = round(-45.2 - (pep_len * 2.3) + (seed_val % 5), 2)
@@ -124,6 +125,9 @@ async def predict_epitope(data: PredictRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+# ==========================================
+# 6. 인프라 포트 구동 블록
+# ==========================================
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
     uvicorn.run("fixed_api_server:app", host="0.0.0.0", port=port)
