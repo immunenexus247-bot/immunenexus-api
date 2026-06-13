@@ -114,23 +114,34 @@ async function run() {
         const responseText = await res.text();
         const data = JSON.parse(responseText);
 
-        // 3. 백엔드 hla_database.json에서 찾아온 진짜 서열 데이터를 화면 UI에 출력
-        document.getElementById("af").innerText = data.vfd_vval_sequence;
+        // 2. 백엔드가 보낸 PlainText 데이터를 자바스크립트 객체로 파싱
+        const responseText = await res.text();
+        const data = JSON.parse(responseText);
+
+        // 3. 🌟 [정밀 교정] 백엔드 변수 이름과 프론트엔드 화면 칸의 매핑 순서를 100% 일치시킵니다!
+        
+        // ① MHC Sequence 칸 (id="mhc") ➡️ 백엔드의 진짜 대립유전자 서열 데이터 대입
         document.getElementById("mhc").innerText = data.generated_mhc;
         
-        // 가짜 텍스트를 완벽히 걷어내고 진짜 데이터를 바인딩합니다.
+        // ② AlphaFold Input 칸 (id="af") ➡️ 백엔드의 GNN 프레임 임베딩 로그 데이터 대입
+        document.getElementById("af").innerText = data.vfd_vval_sequence;
+        
+        // ③ TCR Alpha 및 Beta 서열 칸 매핑
         document.getElementById("tcrAlpha").innerText = data.generated_alpha;
         document.getElementById("tcrBeta").innerText = data.generated_beta;
-        
         document.getElementById("tcrAlpha").style.color = "#047857";
         document.getElementById("tcrBeta").style.color = "#047857";
 
+        // ④ Safety Verdict 칸 (id="sv") ➡️ 백엔드의 실시간 안전성 평가 데이터 대입
         document.getElementById("sv").innerText = data.sv_text || "Inhibit form Resonance Tabulated Linked";
 
-        // 4. 예측 스코어 및 상태 출력
-        const scoreDisplay = data.vval_id2 || data.vfd_vval_id2 || "Score: 0.99";
-        document.getElementById("df").innerText = `vfd_vval_indicator: ${data.vfd_vval_indicator} / ${scoreDisplay}`;
-        
+        // ⑤ Docking Free Energy 칸 (id="df") ➡️ 실제 추론 계산된 수치(kcal/mol 및 신뢰도) 대입
+        // ① 백엔드에서 실시간 추론 연산된 진짜 에너지 및 신뢰도 수치를 가져옵니다.
+        const scoreDisplay = data.vfd_vval_id2 || data.vval_id2 || "Inference failed";
+
+        // ② [정밀 교정] vfd_vval_indicator 상태값과 실제 계산된 프리 에너지 스코어가 화면에 다이렉트로 출력되도록 연결합니다!
+        document.getElementById("df").innerText = `${data.vfd_vval_indicator} / ${scoreDisplay}`;
+
         if (data.vfd_vval_indicator === 'REFUSED') {
             document.getElementById("df").style.color = "#b91c1c";
         } else {
