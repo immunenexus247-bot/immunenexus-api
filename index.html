@@ -97,10 +97,12 @@ async function run() {
 
     try {
         // 1. 주소 및 경로 정밀 연동 (CORS 차단 방지)
+            try {
+        // 1. 주소 및 경로 정밀 연동 (CORS 차단 방지)
         const res = await fetch(`${API_URL}/api/epitope/predict`, {
             method: "POST",
             headers: {
-                "Content-Type": "text/plain"  // 브라우저의 사전 검사(OPTIONS) 강제 패스
+                "Content-Type": "text/plain"  // 브라우저의 사전 검사(OPTIONS) 패스
             },
             body: JSON.stringify({
                 hla_sequence: h,
