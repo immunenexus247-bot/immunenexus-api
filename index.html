@@ -110,7 +110,7 @@ async function run() {
 
         if (!res.ok) throw new Error("Inference Server Error");
         
-        // 2. 🌟 [중복 박멸] responseText는 단 한 번만 선언해야 에러가 나지 않습니다.
+        // 2. 백엔드 PlainText 데이터를 자바스크립트 객체로 올바르게 변환
         const responseText = await res.text();
         const data = JSON.parse(responseText);
 
@@ -123,8 +123,8 @@ async function run() {
         document.getElementById("tcrAlpha").style.color = "#047857";
         document.getElementById("tcrBeta").style.color = "#047857";
 
-        // 🌟 131번째 줄 부근 빈 공간에 이 한 줄을 넣어주셔야 정상적인 분석 완료 등급과 수치가 화면에 찍힙니다!
-        document.getElementById("sv").innerText = data.sv_text; || "Inhibit form Resonance Tabulated Linked";
+        // 🌟 [오타 완벽 박멸] 세미콜론 위치와 문법을 정석대로 결합하여 오류를 원천 차단합니다.
+        document.getElementById("sv").innerText = data.sv_text || "Inhibit form Resonance Tabulated Linked";
 
         // 4. 에너지 및 확률 스코어 정밀 출력
         const scoreDisplay = data.vfd_vval_id2 || data.vval_id2 || "Inference failed";
@@ -137,7 +137,6 @@ async function run() {
         }
 
     } catch (err) {
-        // 🌟 이 누락되었던 catch 블록과 닫는 괄호들이 완벽하게 복구되어 SyntaxError가 소멸합니다!
         alert("Notice: The Render server can be initialized. Please click the accelerate button again in a moment.");
         document.getElementById("mhc").innerText = "Inference failure";
         document.getElementById("tcrAlpha").innerText = "Inference failure";
