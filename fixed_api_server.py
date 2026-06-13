@@ -164,25 +164,16 @@ class DatabaseTemplateManager:
     manager = DatabaseTemplateManager()
 
 # ==========================================
-# 4. 정적 파일 및 런타임 인프라 선언
+# 4. 정적 파일 및 미들웨어 리다이렉트 설정
 # ==========================================
 static_dir = "static"
 if not os.path.exists(static_dir):
-    os.makedirs(static_dir)
+    os.makedirs(static_dir)  # 정확히 공백 4칸(들여쓰기)을 맞춘 상태입니다.
 
 try:
     app.mount("/static", StaticFiles(directory=static_dir), name="static")
 except Exception as e:
     print(f"[WARNING] Static files mount failed: {e}")
-
-@app.middleware("http")
-async def redirect_trailing_slash(request: Request, call_next):
-    if request.url.path != "/" and request.url.path.endswith("/"):
-        modify_url = request.url.path.rstrip("/")
-        if request.query_params:
-            modify_url += f"?{request.query_params}"
-        return RedirectResponse(url=modify_url, status_code=301)
-    return await call_next(request)
 
 # ==========================================
 # 5. API 라우터 (405 및 리다이렉트 차단 완치 버전)
