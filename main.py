@@ -6,7 +6,7 @@ app = FastAPI()
 
 # 1. CORS 설정: 요청을 보낸 Vercel 프론트엔드 주소를 정확히 등록 (끝에 / 없음)
 origins = [
-    "https://vercel.app"
+    "https://immunenexus-api.vercel.app/"
 ]
 
 app.add_middleware(
