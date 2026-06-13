@@ -199,35 +199,31 @@ async def redirect_trailing_slash(request: Request, call_next):
     return await call_next(request)
 
 # ==========================================
-# 5. API 라우터 (404, 405 에러를 원천 차단하는 표준 규격)
+# 5. API 라우터 (CORS 리다이렉트 차단 버그 완치 버전)
 # ==========================================
 @app.get("/")
 def read_root():
     return {"status": "online", "service": "ImmuneNexus TCR GNN Core"}
 
-# 웹사이트의 엔진 점검 버튼과 연동되는 주소 (GET 방식)
 @app.get("/api/health")
 def health_check():
     return {"status": "healthy", "service": "ImmuneNexus"}
 
-# 프론트엔드 index.html fetch 규격과 완벽하게 일치시킨 데이터 바구니 구조
 class PredictRequest(BaseModel):
     hla_sequence: str
     peptide_sequence: str
 
-# ✨ [가장 중요] 반드시 @app.post 방식이어야 405 에러가 나지 않으며, 
-# 주소 명칭이 토씨 하나 안 틀리고 똑같아야 404 에러가 발생하지 않습니다!
+# ✨ [CORS 블로킹 완치] 슬래시가 붙은 주소와 안 붙은 주소 모두를 독립 라우터로 승인합니다.
 @app.post("/api/epitope/predict")
+@app.post("/api/epitope/predict/")  # 끝에 슬래시가 붙어 전송되어도 301 리다이렉트 없이 즉시 처리
 async def predict_epitope(data: PredictRequest):
     if not data.hla_sequence or not data.peptide_sequence:
-        raise HTTPException(status_code=400, detail="필수 데이터 누락")
+        raise HTTPException(status_code=400, detail="Missing required fields")
         
     try:
-        # 통합 데이터베이스 파일(hla_database.json)에서 실시간 명칭 ➔ 서열 전환 실행
         real_hla_sequence = manager.convert_to_sequence(data.hla_sequence)
         pep_tokens = manager.tokenize_peptide(data.peptide_sequence)
         
-        # PyTorch GNN 추론 연산 가동
         if HAS_TORCH and 'model' in globals() and model is not None:
             with torch.no_grad():
                 output = model(pep_tokens)
@@ -240,7 +236,6 @@ async def predict_epitope(data: PredictRequest):
             
         structural_stability = "VERY HIGH" if tcr_binding_probability >= 0.85 else "HIGH" if tcr_binding_probability >= 0.6 else "MEDIUM"
         
-        # 기존 5개 UI 박스에 순서대로 꽂힐 최종 6개 산출물 스트림 전송
         return {
             "status": "success",
             "generated_alpha": "CAVPSGAGSYQLTF",
@@ -251,7 +246,7 @@ async def predict_epitope(data: PredictRequest):
             "stability": structural_stability
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"AI 모델 추론 연산 실패: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Inference failed: {str(e)}")
         
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
