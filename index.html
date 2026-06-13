@@ -110,11 +110,11 @@ async function run() {
 
         if (!res.ok) throw new Error("Inference Server Error");
         
-        // 2. 🌟 [중복 해결] responseText는 한 번만 선언합니다.
+        // 2. 🌟 [중복 박멸] responseText는 단 한 번만 선언해야 에러가 나지 않습니다.
         const responseText = await res.text();
         const data = JSON.parse(responseText);
 
-        // 3. 백엔드 변수 이름과 프론트엔드 화면 칸의 매핑 순서 일치
+        // 3. 백엔드 변수 이름과 프론트엔드 화면 칸의 매핑 순서 100% 일치
         document.getElementById("mhc").innerText = data.generated_mhc;
         document.getElementById("af").innerText = data.vfd_vval_sequence;
         
@@ -125,7 +125,7 @@ async function run() {
 
         document.getElementById("sv").innerText = data.sv_text || "Inhibit form Resonance Tabulated Linked";
 
-        // 4. 에너지 및 확률 스코어 출력
+        // 4. 에너지 및 확률 스코어 정밀 출력
         const scoreDisplay = data.vfd_vval_id2 || data.vval_id2 || "Inference failed";
         document.getElementById("df").innerText = `${data.vfd_vval_indicator} / ${scoreDisplay}`;
         
