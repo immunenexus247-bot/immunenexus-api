@@ -1,9 +1,8 @@
 <!DOCTYPE html>
-<!-- 🌟 [번역 잠금] lang="en"과 class="notranslate"를 심어 브라우저 번역기가 강제로 개입하는 것을 원천 차단합니다 -->
-<html lang="en" class="notranslate">
+<!-- 🌟 브라우저 제멋대로 번역하는 간섭을 원천 차단하기 위해 잠금 마크 유지 -->
+<html class="notranslate">
 <head>
     <meta charset="UTF-8">
-    <!-- 🌟 [구글 번역 차단 메타 태그] 구글 크롬 번역 엔진이 이 사이트를 한글로 바꾸지 못하도록 강력하게 방어막을 구축합니다 -->
     <meta name="google" content="notranslate">
     <title>ImmuneNexus</title>
     <style>
@@ -19,46 +18,58 @@
         .item label { display: block; font-size: 0.8rem; font-weight: 600; color: #666; margin-bottom: 4px; }
         .val { background: #f9f9f9; border: 1px solid #f0f0f0; padding: 12px; border-radius: 6px; font-family: monospace; min-height: 20px; word-break: break-all; }
         
-        /* Legal Notice & Terms Panel Style */
+        /* Legal Notice Panel Style */
         .disclaimer-panel { background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 12px; padding: 24px; font-size: 0.82rem; color: #334155; line-height: 1.6; }
         .disclaimer-panel h4 { margin-top: 0; margin-bottom: 12px; color: #0f172a; font-size: 0.9rem; font-weight: 700; display: flex; align-items: center; gap: 6px; }
         .disclaimer-panel ul { margin: 0; padding-left: 20px; }
         .disclaimer-panel li { margin-bottom: 6px; }
+
+        /* 🌟 [다국어 허브] 상단 수려한 언어 전환 토글 버튼 스타일 디자인 */
+        .lang-control { display: flex; justify-content: flex-end; gap: 10px; margin-bottom: -10px; }
+        .lang-btn { background: #e2e8f0; border: 1px solid #cbd5e1; padding: 6px 14px; border-radius: 20px; font-size: 0.82rem; font-weight: 600; cursor: pointer; color: #475569; transition: all 0.2s; }
+        .lang-btn.active { background: #1e293b; color: #fff; border-color: #1e293b; }
     </style>
 </head>
 <body>
     <div class="w">
+        <!-- 🌟 [언어 스위치 벨브 장착] 사용자가 직접 클릭하여 화면 전체 패널을 실시간 번역 전환하는 컨트롤러 -->
+        <div class="lang-control">
+            <button class="lang-btn active" id="btnEn" onclick="switchLang('en')">English</button>
+            <button class="lang-btn" id="btnKo" onclick="switchLang('ko')">한국어</button>
+        </div>
+
         <div style="text-align:center;">
-            <h1>ImmuneNexus Central Data Hub</h1>
-            <p style="font-size: 1.1rem; color: #444; font-weight: 500;">Global Open Beta - Antigen-TCR Binding Prediction & Generative Design Model Portal</p>
+            <h1 id="mainTitle">ImmuneNexus Central Data Hub</h1>
+            <p id="subTitle" style="font-size: 1.1rem; color: #444; font-weight: 500;">Global Open Beta - Antigen-TCR Binding Prediction & Generative Design Model Portal</p>
         </div>
         
         <div class="grid">
             <div class="panel">
-                <div style="background: #fef2f2; border: 1px solid #fee2e2; border-radius: 6px; padding: 12px; margin-bottom: 15px; font-size: 0.78rem; color: #991b1b; line-height: 1.4;">
+                <!-- 상단 리서치 전용 배너 고지 공간 -->
+                <div id="alertBanner" style="background: #fef2f2; border: 1px solid #fee2e2; border-radius: 6px; padding: 12px; margin-bottom: 15px; font-size: 0.78rem; color: #991b1b; line-height: 1.4;">
                     <strong>⚠️ Research Use Only & AI Disclaimer:</strong> This platform is an AI model-based auxiliary tool for structural modeling research. The generated outputs cannot be used for clinical or medical diagnostic purposes. The operator assumes no biological or legal liability for the results. Usage implies full agreement with the terms below.
                 </div>
 
-                <h2>AI Analysis Parameter Input</h2>
-                <div class="group"><label>Peptide Sequence</label><input type="text" id="pIn" value="CTELKLSDY"></div>
-                <div class="group"><label>HLA Allele Type</label><input type="text" id="hIn" value="HLA-A*03:01"></div>
-                <button class="btn" onclick="run()">Launch Open Beta Inference Immediately</button>
+                <h2 id="inputTitle">AI Analysis Parameter Input</h2>
+                <div class="group"><label id="lblPep">Peptide Sequence</label><input type="text" id="pIn" value="CTELKLSDY"></div>
+                <div class="group"><label id="lblHla">HLA Allele Type</label><input type="text" id="hIn" value="HLA-A*03:01"></div>
+                <button class="btn" id="btnRun" onclick="run()">Launch Open Beta Inference Immediately</button>
             </div>
             
-            <!-- 🌟 [결과 노출 영역 번역 차단 고정] 각 결합 부위 출력창에 class="notranslate"를 정교하게 코팅하여 구글 번역기가 침투하는 것을 영구 방어합니다 -->
             <div class="panel">
-                <h2>AI Structural Computation Results</h2>
-                <div class="item"><label>TCR Split Chain (Alpha/Beta)</label><div class="val notranslate" id="oTcr" style="font-weight:700;">Awaiting Input...</div></div>
-                <div class="item"><label>MHC Sequence</label><div class="val notranslate" id="oMhc">Awaiting Input...</div></div>
-                <div class="item"><label>3D Structural Confidence (pLDDT)</label><div class="val notranslate" id="oAf">Awaiting Input...</div></div>
-                <div class="item"><label>Docking Free Energy</label><div class="val notranslate" id="oE" style="font-weight:bold;">Awaiting Input...</div></div>
-                <div class="item"><label>Safety Verdict (Binding Affinity)</label><div class="val notranslate" id="oV">Awaiting Input...</div></div>
+                <h2 id="resultTitle">AI Structural Computation Results</h2>
+                <div class="item"><label id="lblResTcr">TCR Split Chain (Alpha/Beta)</label><div class="val notranslate" id="oTcr">Awaiting Input...</div></div>
+                <div class="item"><label id="lblResMhc">MHC Sequence</label><div class="val notranslate" id="oMhc">Awaiting Input...</div></div>
+                <div class="item"><label id="lblResAf">3D Structural Confidence (pLDDT)</label><div class="val notranslate" id="oAf">Awaiting Input...</div></div>
+                <div class="item"><label id="lblResE">Docking Free Energy</label><div class="val notranslate" id="oE">Awaiting Input...</div></div>
+                <div class="item"><label id="lblResV">Safety Verdict (Binding Affinity)</label><div class="val notranslate" id="oV">Awaiting Input...</div></div>
             </div>
         </div>
 
-        <div class="disclaimer-panel">
-            <h4>⚖️ Legal Notice & Terms of AI Service</h4>
-            <ul>
+        <!-- 하단 상세 이용약관 고지 구역 -->
+        <div class="disclaimer-panel" id="legalPanel">
+            <h4 id="legalTitle">⚖️ Legal Notice & Terms of AI Service</h4>
+            <ul id="legalContent">
                 <li><strong>User Notification & Disclaimer:</strong> This platform scans immunological structures using proprietary rule-based prediction and AI processing model technologies. The generated outputs (pLDDT, free energy, TCR design sequences, etc.) are intended solely as auxiliary data for structural modeling research. The platform operator assumes no biological, legal, or medical liability for the generated results.</li>
                 <li><strong>Copyright Prevention & Filtering:</strong> This system operates based on proprietary datasets and public indices that do not infringe upon third-party intellectual property rights. Any malicious use, including abnormal prompt injection or infringement of third-party IP rights, may be pre-screened and blocked by the filtering system (Content Moderation).</li>
                 <li><strong>AI-Generated Output Disclosure:</strong> All amino acid sequences and structural validation vector values derived from ImmuneNexus are explicitly declared as results automatically designed and embedded in real-time via de novo methods through computer algorithms and AI weight computations.</li>
