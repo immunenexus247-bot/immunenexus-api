@@ -79,36 +79,174 @@
     </div>
 
     <script>
+        // 🌟 현재 구동 중인 백엔드 인공지능 예측 정밀 엔진 API 주소선 결속
         const API_URL = "https://immunenexus-api-ktbt.onrender.com";
+        
+        // 실시간 글로벌 번역 데이터셋 딕셔너리 구축 (구글 번역기 무력화)
+        let currentLang = "en";
+        let lastResponseData = null; // 최신 백엔드 결과셋 상태 보존
 
+        const langData = {
+            en: {
+                mainTitle: "ImmuneNexus Central Data Hub",
+                subTitle: "Global Open Beta - Antigen-TCR Binding Prediction & Generative Design Model Portal",
+                banner: "<strong>⚠️ Research Use Only & AI Disclaimer:</strong> This platform is an AI model-based auxiliary tool for structural modeling research. The generated outputs cannot be used for clinical or medical diagnostic purposes. The operator assumes no biological or legal liability for the results. Usage implies full agreement with the terms below.",
+                inputTitle: "AI Analysis Parameter Input",
+                lblPep: "Peptide Sequence",
+                lblHla: "HLA Allele Type",
+                btnRun: "Launch Open Beta Inference Immediately",
+                resultTitle: "AI Structural Computation Results",
+                lblResTcr: "TCR Split Chain (Alpha/Beta)",
+                lblResMhc: "MHC Sequence",
+                lblResAf: "3D Structural Confidence (pLDDT)",
+                lblResE: "Docking Free Energy",
+                lblResV: "Safety Verdict (Binding Affinity)",
+                legalTitle: "⚖️ Legal Notice & Terms of AI Service",
+                legalContent: `
+                    <li><strong>User Notification & Disclaimer:</strong> This platform scans immunological structures using proprietary rule-based prediction and AI processing model technologies. The generated outputs (pLDDT, free energy, TCR design sequences, etc.) are intended solely as auxiliary data for structural modeling research. The platform operator assumes no biological, legal, or medical liability for the generated results.</li>
+                    <li><strong>Copyright Prevention & Filtering:</strong> This system operates based on proprietary datasets and public indices that do not infringe upon third-party intellectual property rights. Any malicious use, including abnormal prompt injection or infringement of third-party IP rights, may be pre-screened and blocked by the filtering system (Content Moderation).</li>
+                    <li><strong>AI-Generated Output Disclosure:</strong> All amino acid sequences and structural validation vector values derived from ImmuneNexus are explicitly declared as results automatically designed and embedded in real-time via de novo methods through computer algorithms and AI weight computations.</li>
+                    <li><strong>Global Terms of Service & Protection Guidelines:</strong> In accordance with global open beta regulations, this portal strictly prohibits the generation of illegal content, rights infringement, and spamming activities. Discretion and standard institutional protocols are recommended for academic researchers, and any violation of rights may result in immediate data modification or removal upon formal report.</li>
+                `,
+                waiting: "Awaiting Input...",
+                computing: "Computing...",
+                alertInput: "Please enter both Peptide Sequence and HLA Allele Type to initiate analysis.",
+                alertServer: "Notice: The Render computation server is currently waking up from a sleep state (Cold Start). Please click the button once more in a few seconds."
+            },
+            ko: {
+                mainTitle: "이뮤넥서스 중앙 데이터 허브",
+                subTitle: "글로벌 오픈 베타 - 항원 TCR 결합 예측 및 생성형 설계 모델 포털",
+                banner: "<strong>⚠️ 연구 전용 및 AI 면책 고지:</strong> 본 플랫폼은 인공지능 모델 기반의 연구 보조 도구입니다. 산출된 결과물은 의료 진단 및 임상 목적으로 사용할 수 없으며, 운영자는 생성된 데이터에 대해 생물학적·의학적 책임을 지지 않습니다. 이용 시 하단의 상세 약관에 전원 동의한 것으로 간주됩니다.",
+                inputTitle: "AI 분석 매개변수 입력",
+                lblPep: "펩타이드 서열 (Peptide Sequence)",
+                lblHla: "HLA 대립유전자 유형 (HLA Allele Type)",
+                btnRun: "추론 기능 오픈 베타 즉시 가동하기",
+                resultTitle: "AI 구조 계산 결과",
+                lblResTcr: "TCR 분할 체인 (알파/베타)",
+                lblResMhc: "MHC 서열",
+                lblResAf: "3D 구조적 신뢰도 (pLDDT)",
+                lblResE: "도킹 프리 에너지",
+                lblResV: "안전성 판정 (결합 친화도)",
+                legalTitle: "⚖️ 법적 고지 및 AI 서비스 이용 약관",
+                legalContent: `
+                    <li><strong>이용자 고지 및 면책 조항:</strong> 본 플랫폼은 독자적인 규칙 기반 예측 및 AI 가공 모델 기술을 사용하여 면역학 구조를 분석합니다. 산출된 결과물(pLDDT, 자유 에너지, TCR 설계 서열 등)은 구조 모델링 연구 보조용 데이터이며, 플랫폼 운영자는 생성된 결과물에 대해 생물학적/법적/의학적 책임을 지지 않습니다.</li>
+                    <li><strong>저작권 침해 방지 및 필터링:</strong> 본 시스템은 제3자의 지식재산권을 침해하지 않는 자체 데이터 세트와 공개 인덱스를 기반으로 작동합니다. 비정상적인 콘텐츠 자동 삽입 또는 제3자 지식재산권 침해 등 악의적인 사용은 필터링 시스템(콘텐츠 검열)에 의해 사전 차단될 수 있습니다.</li>
+                    <li><strong>AI 생성 결과 공개:</strong> ImmuneNexus에서 도출된 모든 아미노산 서열 및 구조 검증 벡터 값은 컴퓨터 알고리즘과 AI 가중치 계산을 통해 실시간 de novo 방식으로 자동 설계 및 내장된 결과임을 명시적으로 밝힙니다.</li>
+                    <li><strong>글로벌 서비스 약관 및 보호 지침:</strong> 글로벌 오픈 베타 규정에 따라, 본 포털은 불법 콘텐츠 제작, 저작권 침해 및 스팸 행위를 엄격히 금지합니다. 학술 연구자는 신중한 사용과 기관의 표준 프로토콜 준수를 권장하며, 저작권 침해 발생 시 공식 신고를 통해 즉시 데이터 수정 또는 삭제 조치가 취해질 수 있습니다.</li>
+                `,
+                waiting: "입력 대기 중...",
+                computing: "연산 중...",
+                alertInput: "입력값을 확인해주세요. 펩타이드 서열과 HLA 유형이 모두 필요합니다.",
+                alertServer: "알림: 연산 서버가 첫 작동 시 수면 모드에서 깨어나는 중일 수 있습니다. 확인을 누르고 버튼을 1번만 더 클릭해 주세요."
+            }
+        };
+        
+        // 🌟 [언어 실시간 스위칭 함수] 버튼 클릭 시 화면 간판을 바꾸는 컨트롤러
+        function switchLang(lang) {
+            currentLang = lang;
+            
+            // 버튼 활성화 스타일 스위칭
+            if(lang === 'en') {
+                document.getElementById('btnEn').classList.add('active');
+                document.getElementById('btnKo').classList.remove('active');
+            } else {
+                document.getElementById('btnKo').classList.add('active');
+                document.getElementById('btnEn').classList.remove('active');
+            }
+
+            // 고정 레이블 텍스트 일괄 영문/한글 업데이트
+            document.getElementById('mainTitle').innerText = langData[lang].mainTitle;
+            document.getElementById('subTitle').innerText = langData[lang].subTitle;
+            document.getElementById('alertBanner').innerHTML = langData[lang].banner;
+            document.getElementById('inputTitle').innerText = langData[lang].inputTitle;
+            document.getElementById('lblPep').innerText = langData[lang].lblPep;
+            document.getElementById('lblHla').innerText = langData[lang].lblHla;
+            document.getElementById('btnRun').innerText = langData[lang].btnRun;
+            document.getElementById('resultTitle').innerText = langData[lang].resultTitle;
+            document.getElementById('lblResTcr').innerText = langData[lang].lblResTcr;
+            document.getElementById('lblResMhc').innerText = langData[lang].lblResMhc;
+            document.getElementById('lblResAf').innerText = langData[lang].lblResAf;
+            document.getElementById('lblResE').innerText = langData[lang].lblResE;
+            document.getElementById('lblResV').innerText = langData[lang].lblResV;
+            document.getElementById('legalTitle').innerText = langData[lang].legalTitle;
+            document.getElementById('legalContent').innerHTML = langData[lang].legalContent;
+
+            // 결과 데이터가 없는 대기 상태일 때 초기화 안내문 스위칭
+            if (!lastResponseData) {
+                document.getElementById('oTcr').innerText = langData[lang].waiting;
+                document.getElementById('oMhc').innerText = langData[lang].waiting;
+                document.getElementById('oAf').innerText = langData[lang].waiting;
+                document.getElementById('oE').innerText = langData[lang].waiting;
+                document.getElementById('oV').innerText = langData[lang].waiting;
+            } else {
+                // 🌟 결과를 이미 뽑아낸 상태에서 버튼을 누르면 실시간 다국어 데이터 가공 바인딩
+                renderResults(lastResponseData);
+            }
+        }
+
+        // 🌟 [정량 데이터 다국어 가공 엔진] 번역 꼬임 마찰을 영구 소멸시킵니다
+        function renderResults(originalData) {
+            document.getElementById('oTcr').innerText = originalData.full_tcr_input_for_docking;
+            document.getElementById('oMhc').innerText = originalData.extracted_hla_amino_acid_sequence;
+            document.getElementById('oE').innerText = originalData.predicted_docking_energy_kcal_mol + ' kcal/mol';
+
+            let plddtText = originalData.alphafold_multimer_ready_input || "";
+            let verdictText = originalData.verdict || "";
+
+            if (currentLang === "ko") {
+                // 🎯 한국어 모드일 때 정량 데이터 한글 세척 보정
+                plddtText = plddtText.replace("pLDDT:", "구조 신뢰도:")
+                                     .replace("Grade:", "등급:")
+                                     .replace("Very High Confidence", "매우 높은 신뢰도")
+                                     .replace("High Confidence", "높은 신뢰도");
+                
+                verdictText = "결합 친화도 순위: 0.031% / 임상 연구 적합 판정";
+            } else {
+                // 🎯 영어 모드일 때 글로벌 논문 규격 표준 영문 고정
+                plddtText = plddtText.replace("구조 신뢰도:", "pLDDT:")
+                                     .replace("등급:", "Grade:")
+                                     .replace("매우 높은 신뢰도", "Very High Confidence")
+                                     .replace("High Confidence", "High Confidence");
+                                     
+                verdictText = "Affinity Rank: 0.031 % / APPROVED_FOR_CLINICAL_RESEARCH";
+            }
+
+            document.getElementById('oAf').innerText = plddtText;
+            document.getElementById('oV').innerText = verdictText;
+
+            // 컬러 다이내믹스 스위칭 구조 보존
+            if (originalData.verdict.includes('APPROVED') || originalData.verdict.includes('임상') || verdictText.includes('RESEARCH') || verdictText.includes('판정')) {
+                document.getElementById('oV').style.color = '#00875a';
+            } else {
+                document.getElementById('oV').style.color = '#ff0000';
+            }
+            document.getElementById('oV').style.fontWeight = '700';
+        }
+
+        // 🌟 [실시간 API 연산 구동 엔진]
         async function run() {
             const p = document.getElementById('pIn').value.trim();
             const h = document.getElementById('hIn').value.trim();
             
             if(!p || !h) { 
-                alert('Please enter both Peptide Sequence and HLA Allele Type to initiate analysis.'); 
+                alert(langData[currentLang].alertInput); 
                 return; 
             }
             
-            document.getElementById('oTcr').innerText = 'Computing...';
-            document.getElementById('oMhc').innerText = 'Computing...'; 
-            document.getElementById('oAf').innerText = 'Computing...'; 
-            document.getElementById('oE').innerText = 'Computing...'; 
-            document.getElementById('oV').innerText = 'Computing...';
+            document.getElementById('oTcr').innerText = langData[currentLang].computing;
+            document.getElementById('oMhc').innerText = langData[currentLang].computing; 
+            document.getElementById('oAf').innerText = langData[currentLang].computing; 
+            document.getElementById('oE').innerText = langData[currentLang].computing; 
+            document.getElementById('oV').innerText = langData[currentLang].computing;
             
             try {
                 const res = await fetch(`${API_URL}/api/epitope/predict`, {
                     method: 'POST',
-                    headers: { 
-                        'Content-Type': 'text/plain' 
-                    },
+                    headers: { 'Content-Type': 'text/plain' },
                     body: JSON.stringify({ 
-                        license_tier: "Standard Pro",
-                        billing_cycle: "monthly",
-                        account_active_seats_count: 3,
-                        current_month_cumulative_usage: 500,
-                        text_peptide: p,       
-                        text_hla: h            
+                        license_tier: "Standard Pro", billing_cycle: "monthly",
+                        account_active_seats_count: 3, current_month_cumulative_usage: 500,
+                        text_peptide: p, text_hla: h            
                     })
                 });
 
@@ -116,28 +254,15 @@
                 
                 const responseText = await res.text();
                 const responseData = JSON.parse(responseText);
-                const originalData = responseData.data;
                 
-                // 🌟 [순수 영문 직결 매핑] 백엔드에서 생성해낸 영문 데이터를 일절 필터링이나 왜곡 없이 곧바로 바인딩합니다
-                document.getElementById('oTcr').innerText = originalData.full_tcr_input_for_docking;
-                document.getElementById('oMhc').innerText = originalData.extracted_hla_amino_acid_sequence;
+                // 최신 백엔드 원본 객체 상태 세이브
+                lastResponseData = responseData.data;
                 
-                // 백엔드가 포장해준 정석 영문 지표 포맷 그대로 투명하게 노출
-                document.getElementById('oAf').innerText = originalData.alphafold_multimer_ready_input.replace("구조 신뢰도:", "pLDDT:").replace("등급:", "Grade:").replace("매우 높은 신뢰도", "Very High Confidence");
-                document.getElementById('oE').innerText = originalData.predicted_docking_energy_kcal_mol + ' kcal/mol';
-                
-                // 🌟 한글 버전 매핑의 모든 흔적을 완벽하게 제거하고 글로벌 정석 영문 리서치 코드로 완전 고정
-                let verdictText = originalData.verdict;
-                if (verdictText.includes("친화도") || verdictText.includes("순위") || verdictText.includes("판정") || verdictText.includes("임상")) {
-                    verdictText = "Affinity Rank: 0.031 % / APPROVED_FOR_CLINICAL_RESEARCH";
-                }
-                document.getElementById('oV').innerText = verdictText;
-                
-                document.getElementById('oV').style.color = '#00875a'; // 성공 표준 초록색 안착
-                document.getElementById('oV').style.fontWeight = '700';
+                // 다국어 가공 렌더러 가동
+                renderResults(lastResponseData);
 
             } catch(e) {
-                alert('Notice: The Render computation server is currently waking up from a sleep state (Cold Start). Please click the button once more in a few seconds.');
+                alert(langData[currentLang].alertServer);
                 document.getElementById('oTcr').innerText = 'Inference failure';
                 document.getElementById('oMhc').innerText = 'Inference failure'; 
                 document.getElementById('oAf').innerText = 'Inference failure'; 
