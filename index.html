@@ -64,26 +64,27 @@
     </div>
 
     <script>
+        // 🌟 최신 정밀 가동 중인 백엔드 Render 실치 주소 완벽 세팅
         const API_URL = "https://immunenexus-api-ktbt.onrender.com";
 
         async function run() {
             const p = document.getElementById('pIn').value.trim();
             const h = document.getElementById('hIn').value.trim();
             
-            // 🌟 [영문 정제] 공백 경고 창 영문 변경
             if(!p || !h) { 
-                alert('Please check the input values. Both Peptide and HLA are required.'); 
+                alert('입력값을 확인해주세요.'); 
                 return; 
             }
             
-            // 🌟 [영문 정제] 실시간 연산(Computing) 상태 텍스트 영문 표준화
-            document.getElementById('oTcr').innerText = 'Computing...';
-            document.getElementById('oMhc').innerText = 'Computing...'; 
-            document.getElementById('oAf').innerText = 'Computing...'; 
-            document.getElementById('oE').innerText = 'Computing...'; 
-            document.getElementById('oV').innerText = 'Computing...';
+            // 분석 시작 시 실시간 연산(Computing) 상태 텍스트 출력
+            document.getElementById('oTcr').innerText = '연산 중...';
+            document.getElementById('oMhc').innerText = '연산 중...'; 
+            document.getElementById('oAf').innerText = '연산 중...'; 
+            document.getElementById('oE').innerText = '연산 중...'; 
+            document.getElementById('oV').innerText = '연산 중...';
             
             try {
+                // Content-Type을 'text/plain'으로 설정하여 브라우저의 CORS 사전 차단을 완벽히 우회합니다.
                 const res = await fetch(`${API_URL}/api/epitope/predict`, {
                     method: 'POST',
                     headers: { 
@@ -101,26 +102,31 @@
 
                 if(!res.ok) throw new Error("Inference Server Error");
                 
+                // 백엔드가 PlainTextResponse로 돌려준 문자열 데이터를 수신합니다.
                 const responseText = await res.text();
+                
+                // 🌟 [114번째 줄 오타 완벽 청소] 기호 꼬임과 SyntaxError 요인을 정석 문법으로 완벽히 박멸했습니다!
                 const responseData = JSON.parse(responseText);
                 const originalData = responseData.data;
                 
-                // 🌟 [영문 정제] 백엔드 결과 한글 치환 연산 결속 가공
+                // 🌟 [출력 칸 배치 순서 및 최초 모델 연산 산출 방식 100% 동기화 매핑]
+                // ① 최우선 순위: TCR 서열
                 document.getElementById('oTcr').innerText = originalData.full_tcr_input_for_docking;
+                
+                // ② 차순위: MHC 서열
                 document.getElementById('oMhc').innerText = originalData.extracted_hla_amino_acid_sequence;
                 
-                // 백엔드가 포장해 준 영문 표준 결과 수치(pLDDT, kcal/mol) 매핑
-                // (만약 백엔드 리턴 문자열 내부에 한글 '등급: 매우 높은 신뢰도' 등이 섞여서 나온다면, 
-                #  프론트엔드단에서 아래 주석 처리된 영어 포맷 코드로 최종 덮어씌워 출력해도 깔끔합니다.)
-                document.getElementById('oAf').innerText = originalData.alphafold_multimer_ready_input.replace("등급: 매우 높은 신뢰도", "Grade: Very High Confidence").replace("등급: 높은 신뢰도", "Grade: High Confidence");
+                // ③ 그 외 수치 결과물 1: 입체 구조 신뢰도 수치 (pLDDT)
+                document.getElementById('oAf').innerText = originalData.alphafold_multimer_ready_input; 
+                
+                // ④ 그 외 수치 결과물 2: 자유 에너지 깁스 스코어 수치
                 document.getElementById('oE').innerText = originalData.predicted_docking_energy_kcal_mol + ' kcal/mol';
                 
-                // 🌟 [영문 정제] 안전성 판정 한글 매핑 찌꺼기 전면 영어 원상복구
-                let verdictText = originalData.verdict;
-                verdictText = verdictText.replace("친화도 순위", "Affinity Rank").replace("임상 승인됨", "APPROVED_FOR_CLINICAL");
-                document.getElementById('oV').innerText = verdictText;
+                // ⑤ 맨 마지막 순위 고정: 최종 예측 결합도 판정 결과 칸 (Safety Verdict)
+                document.getElementById('oV').innerText = originalData.verdict;
                 
-                if (originalData.verdict.includes('APPROVED_FOR_CLINICAL') || originalData.verdict.includes('임상 승인됨')) {
+                // 결합도 판정에 따른 dynamic 컬러 가독성 시스템 가동
+                if (originalData.verdict.includes('APPROVED_FOR_CLINICAL')) {
                     document.getElementById('oV').style.color = '#00875a';
                 } else {
                     document.getElementById('oV').style.color = '#ff0000';
@@ -128,7 +134,7 @@
                 document.getElementById('oV').style.fontWeight = '700';
 
             } catch(e) {
-                alert('Notice: The calculation server may be initializing from a sleep state. Please click the button once more in a few seconds.');
+                alert('Notice: Render 서버가 첫 로드 시 잠시 깨어나는 대기(Cold Start) 상태일 수 있습니다. 확인을 누르고 버튼을 1번만 더 클릭해 주세요.');
                 document.getElementById('oTcr').innerText = 'Inference failure';
                 document.getElementById('oMhc').innerText = 'Inference failure'; 
                 document.getElementById('oAf').innerText = 'Inference failure'; 
