@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 # 🌟 자동 리다이렉트 간섭을 차단하여 프론트엔드 경로선과의 오차를 원천 예방합니다.
 app = FastAPI(redirect_slashes=False)
 
-# 글로벌 런칭 보안 제약 전면 우회를 위한 와일드카드 탑재
+# CORS 보안 제약을 전면 우회하기 위해 와일드카드(*) 처리가 확실히 되어 있는지 확인하세요.
 origins = ["*"]
 
 app.add_middleware(
