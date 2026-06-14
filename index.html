@@ -55,71 +55,84 @@
     </div>
 
     <script>
-        const API_URL = "https://onrender.com";
+        // 🌟 최신 가동 중인 백엔드 Render 실치 주소 완벽 세팅
+const API_URL = "https://onrender.com";
 
-        async function run() {
-            const p = document.getElementById('pIn').value.trim();
-            const h = document.getElementById('hIn').value.trim();
-            
-            if(!p || !h) { 
-                alert('입력값을 확인해주세요.'); 
-                return; 
-            }
-            
-            document.getElementById('oTcr').innerText = '연산 중...';
-            document.getElementById('oMhc').innerText = '연산 중...'; 
-            document.getElementById('oAf').innerText = '연산 중...'; 
-            document.getElementById('oE').innerText = '연산 중...'; 
-            document.getElementById('oV').innerText = '연산 중...';
-            
-            try {
-                const res = await fetch(`${API_URL}/api/epitope/predict`, {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'text/plain' 
-                    },
-                    body: JSON.stringify({ 
-                        license_tier: "Standard Pro",
-                        billing_cycle: "monthly",
-                        account_active_seats_count: 3,
-                        current_month_cumulative_usage: 500,
-                        text_peptide: p,       
-                        text_hla: h            
-                    })
-                });
+async function run() {
+    const p = document.getElementById('pIn').value.trim();
+    const h = document.getElementById('hIn').value.trim();
+    
+    if(!p || !h) { 
+        alert('입력값을 확인해주세요.'); 
+        return; 
+    }
+    
+    // 분석 시작 시 로딩 상태 전환
+    document.getElementById('oTcr').innerText = '연산 중...';
+    document.getElementById('oMhc').innerText = '연산 중...'; 
+    document.getElementById('oAf').innerText = '연산 중...'; 
+    document.getElementById('oE').innerText = '연산 중...'; 
+    document.getElementById('oV').innerText = '연산 중...';
+    
+    try {
+        // 🌟 [핵심 교정] Content-Type을 'text/plain'으로 설정하여 브라우저의 CORS 사전 차단을 완전히 우회합니다!
+        const res = await fetch(`${API_URL}/api/epitope/predict`, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'text/plain'
+            },
+            body: JSON.stringify({ 
+                license_tier: "Standard Pro",
+                billing_cycle: "monthly",
+                account_active_seats_count: 3,
+                current_month_cumulative_usage: 500,
+                text_peptide: p,       
+                text_hla: h            
+            })
+        });
 
-                if(!res.ok) throw new Error("Inference Server Error");
-                
-                const responseText = await res.text();
-                const responseData = JSON.parse(responseText);
-                
-                // 최초 오리지널 AI 모델의 반환 데이터 핵심 주머니 내부 추출
-                const originalData = responseData.data;
-                
-                // 순서가 뒤바뀌더라도 각 컴포넌트 ID에 매칭되는 데이터 결합 흐름 무결점 유지
-                document.getElementById('oTcr').innerText = originalData.full_tcr_input_for_docking;
-                document.getElementById('oMhc').innerText = originalData.extracted_hla_amino_acid_sequence;
-                document.getElementById('oAf').innerText = originalData.alphafold_multimer_ready_input;
-                document.getElementById('oE').innerText = originalData.predicted_docking_energy_kcal_mol + ' kcal/mol';
-                document.getElementById('oV').innerText = originalData.verdict;
-                
-                // 맨 마지막 예측 결합도 칸의 다이내믹 컬러 액션 스위칭 구조 보존
-                if (originalData.verdict === 'APPROVED_FOR_CLINICAL') {
-                    document.getElementById('oV').style.color = '#00875a';
-                } else {
-                    document.getElementById('oV').style.color = '#ff0000';
-                }
-                document.getElementById('oV').style.fontWeight = '700';
-
-            } catch(e) {
-                alert('Notice: Render 서버가 첫 로드 시 수면 모드 상태일 수 있습니다. 확인을 누르고 버튼을 1번만 더 클릭해 주세요.');
-                document.getElementById('oTcr').innerText = 'Inference failure';
-                document.getElementById('oMhc').innerText = 'Inference failure'; 
-                document.getElementById('oAf').innerText = 'Inference failure'; 
-                document.getElementById('oE').innerText = 'Inference failure'; 
-                document.getElementById('oV').innerText = 'Inference failure';
-            }
+        if(!res.ok) throw new Error("Inference Server Error");
+        
+        // 백엔드가 PlainTextResponse로 돌려준 문자열 데이터를 안전하게 가로채 자바스크립트 객체로 파싱
+        const responseText = await res.text();
+        const responseData = JSON.parse(responseText);
+        
+        // 최초 오리지널 AI 모델의 반환 데이터 핵심 주머니(.data) 추출
+        const originalData = responseData.data;
+        
+        // 🌟 [출력 칸 배치 순서 및 최초 모델 출력 방식 100% 매핑 완료]
+        // ① 최우선 순위: TCR 서열
+        document.getElementById('oTcr').innerText = originalData.full_tcr_input_for_docking;
+        
+        // ② 차순위: MHC 서열
+        document.getElementById('oMhc').innerText = originalData.extracted_hla_amino_acid_sequence;
+        
+        // ③ 그 외 수치 결과물 1: 알파폴드 인풋 조합 구조
+        document.getElementById('oAf').innerText = originalData.alphafold_multimer_ready_input;
+        
+        // ④ 그 외 수치 결과물 2: 자유 에너지 깁스 스코어
+        document.getElementById('oE').innerText = originalData.predicted_docking_energy_kcal_mol + ' kcal/mol';
+        
+        // ⑤ 맨 마지막 순위 고정: 예측 결합도 등급 판정 칸 (Safety Verdict)
+        document.getElementById('oV').innerText = originalData.verdict;
+        
+        // 예측 결합도 칸의 다이내믹 컬러 액션 스위칭 구조 보존
+        if (originalData.verdict === 'APPROVED_FOR_CLINICAL') {
+            document.getElementById('oV').style.color = '#00875a';
+        } else {
+            document.getElementById('oV').style.color = '#ff0000';
         }
-    </script>
+        document.getElementById('oV').style.fontWeight = '700';
+
+    } catch(e) {
+        alert('Notice: Render 서버가 첫 로드 시 수면 모드 상태일 수 있습니다. 확인을 누르고 버튼을 1번만 더 클릭해 주세요.');
+        document.getElementById('oTcr').innerText = 'Inference failure';
+        document.getElementById('oMhc').innerText = 'Inference failure'; 
+        document.getElementById('oAf').innerText = 'Inference failure'; 
+        document.getElementById('oE').innerText = 'Inference failure'; 
+        document.getElementById('oV').innerText = 'Inference failure';
+    }
+}
+</script>
 </body>
 </html>
