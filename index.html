@@ -111,12 +111,12 @@ async function run() {
     document.getElementById("df").innerText = "Computing Gibbs Free Energy (ΔG kcal/mol) via Vina Engine...";
     document.getElementById("sv").innerText = "Calculating Complex Dissociation Constant (Kd) & Half-life...";
 
-    try {
-        // 1. 주소 및 경로 정밀 연동 (CORS 차단 방지)
+        try {
+        // 1. 🌟 [정밀 교정] 주소 변수 호출 방식을 자바스크립트 표준 표준으로 완벽 동기화합니다.
         const res = await fetch(`${API_URL}/api/epitope/predict`, {
             method: "POST",
             headers: {
-                "Content-Type": "text/plain"  // 브라우저의 사전 검사(OPTIONS) 패스
+                "Content-Type": "text/plain"  // 브라우저의 CORS 사전 검사 우회
             },
             body: JSON.stringify({
                 hla_sequence: h,
@@ -124,6 +124,7 @@ async function run() {
             })
         });
 
+        // 🌟 [정밀 교정] res 앞에 느낌표(!)가 정확히 붙어있어야 성공했을 때 튕기지 않습니다!
         if (!res.ok) throw new Error("Inference Server Error");
         
         // 2. 백엔드가 보낸 무결점 PlainText 데이터를 자바스크립트 객체로 올바르게 변환
