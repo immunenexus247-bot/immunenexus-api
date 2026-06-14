@@ -119,14 +119,20 @@
                 // ③ 그 외 수치 결과물 1: 입체 구조 신뢰도 수치 (pLDDT)
                 document.getElementById('oAf').innerText = originalData.alphafold_multimer_ready_input; 
                 
-                // ④ 그 외 수치 결과물 2: 자유 에너지 깁스 스코어 수치
+                // 3D 구조적 신뢰도 및 도킹 자유 에너지 바인딩
+                document.getElementById('oAf').innerText = originalData.alphafold_multimer_ready_input;
                 document.getElementById('oE').innerText = originalData.predicted_docking_energy_kcal_mol + ' kcal/mol';
-                
-                // ⑤ 맨 마지막 순위 고정: 최종 예측 결합도 판정 결과 칸 (Safety Verdict)
-                document.getElementById('oV').innerText = originalData.verdict;
-                
-                // 결합도 판정에 따른 dynamic 컬러 가독성 시스템 가동
-                if (originalData.verdict.includes('APPROVED_FOR_CLINICAL')) {
+        
+                // 🌟 [법적 제재 영구 박멸] 한글 '임상 승인됨' 단어를 글로벌 공식 학술 연구용 표준으로 치환합니다!
+                let verdictText = originalData.verdict;
+                verdictText = verdictText.replace("친화도 순위", "Affinity Rank")
+                                         .replace("임상 승인됨", "APPROVED_FOR_CLINICAL_RESEARCH");
+        
+                // 최하단 Safety Verdict 칸에 정제된 영문 표준 등급 출력
+                document.getElementById('oV').innerText = verdictText;
+        
+                // 컬러 다이내믹스 조건식 보완 (한글/영문 모두 안전하게 대응)
+                if (originalData.verdict.includes('APPROVED_FOR_CLINICAL') || originalData.verdict.includes('임상 승인됨')) {
                     document.getElementById('oV').style.color = '#00875a';
                 } else {
                     document.getElementById('oV').style.color = '#ff0000';
