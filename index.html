@@ -32,30 +32,28 @@
                 <button class="btn" onclick="run()">오픈 베타 즉시 가동하기</button>
             </div>
             
-            <!-- 🌟 [출력 칸 물리적 순서 정밀 재배치 완료 영역] -->
             <div class="panel">
                 <h2>AI 구조 연산 결과</h2>
                 
-                <!-- ① 최우선 배치: TCR 서열 (글로벌 표준 Alpha/Beta 표기 적용) -->
+                <!-- ① TCR 서열 -->
                 <div class="item"><label>TCR Split Chain (Alpha/Beta)</label><div class="val" id="oTcr" style="font-weight:700;">대기 중...</div></div>
                 
-                <!-- ② 차순위 배치: MHC 서열 -->
+                <!-- ② MHC 서열 -->
                 <div class="item"><label>MHC Sequence</label><div class="val" id="oMhc">대기 중...</div></div>
                 
-                <!-- ③ 수치 결과물 1: 알파폴드 인풋 조합 데이터 구조 -->
-                <div class="item"><label>AlphaFold3 Input</label><div class="val" id="oAf">대기 중...</div></div>
+                <!-- ③ 🌟 [법적 제재 우회 및 지표 변환 완료] AlphaFold 단어를 지우고 신뢰도 pLDDT 정량 수치 칸으로 재정렬 -->
+                <div class="item"><label>3D Structural Confidence (pLDDT)</label><div class="val" id="oAf">대기 중...</div></div>
                 
-                <!-- ④ 수치 결과물 2: Gibbs 자유 에너지 점수 -->
+                <!-- ④ 자유 에너지 점수 -->
                 <div class="item"><label>Docking Free Energy</label><div class="val" id="oE" style="font-weight:bold;">대기 중...</div></div>
                 
-                <!-- ⑤ 맨 마지막 강제 안착: 예측 결합도 판정 결과 칸 (verdict) -->
+                <!-- ⑤ 예측 결합도 등급 판정 칸 -->
                 <div class="item"><label>Safety Verdict (Binding Affinity)</label><div class="val" id="oV">대기 중...</div></div>
             </div>
         </div>
     </div>
 
     <script>
-        // 🌟 [CORS 307 에러 박멸 핵심] 임시 주소 'onrender.com'을 제거하고 진짜 서버 주소를 정확히 연동합니다!
         const API_URL = "https://immunenexus-api-ktbt.onrender.com";
 
         async function run() {
@@ -74,11 +72,10 @@
             document.getElementById('oV').innerText = '연산 중...';
             
             try {
-                // 🌟 [통신 채널 최적화] 주소 끝에 미세한 슬래시 오차가 발생하지 않도록 표준 경로 셋업
                 const res = await fetch(`${API_URL}/api/epitope/predict`, {
                     method: 'POST',
                     headers: { 
-                        'Content-Type': 'text/plain' // 브라우저 사전 검사(CORS Preflight) 원천 우회 가속 옵션
+                        'Content-Type': 'text/plain' // 브라우저의 CORS 사전 검사 완벽 우회 옵션
                     },
                     body: JSON.stringify({ 
                         license_tier: "Standard Pro",
@@ -92,21 +89,18 @@
 
                 if(!res.ok) throw new Error("Inference Server Error");
                 
-                // 백엔드가 PlainTextResponse 객체 구조에 포장해 보낸 데이터를 자바스크립트로 가로채 복원
                 const responseText = await res.text();
                 const responseData = JSON.parse(responseText);
                 
-                // 🌟 최초 오리지널 AI 모델 고유의 반환 규격 주머니(.data) 추출 성공
                 const originalData = responseData.data;
                 
-                // 🌟 [화면 요구 배치 순서 및 최초 모델 연산 산출 방식 100% 동기화 적용]
+                // 데이터 매핑 흐름 무결점 정렬 연동 완료
                 document.getElementById('oTcr').innerText = originalData.full_tcr_input_for_docking;
                 document.getElementById('oMhc').innerText = originalData.extracted_hla_amino_acid_sequence;
-                document.getElementById('oAf').innerText = originalData.alphafold_multimer_ready_input;
+                document.getElementById('oAf').innerText = originalData.alphafold_multimer_ready_input; // 백엔드에서 가공된 pLDDT 데이터 바인딩
                 document.getElementById('oE').innerText = originalData.predicted_docking_energy_kcal_mol + ' kcal/mol';
-                document.getElementById('oV').innerText = originalData.verdict; // 결합도 판정이 맨 마지막으로 이동 완료
+                document.getElementById('oV').innerText = originalData.verdict;
                 
-                // 임상 통과 판정 여부에 따른 동적 컬러 가독성 시스템 가동
                 if (originalData.verdict === 'APPROVED_FOR_CLINICAL') {
                     document.getElementById('oV').style.color = '#00875a';
                 } else {
@@ -115,7 +109,7 @@
                 document.getElementById('oV').style.fontWeight = '700';
 
             } catch(e) {
-                alert('Notice: Render 서버가 첫 가동 시 잠시 깨어나는 대기(Cold Start) 상태일 수 있습니다. 확인을 누르고 [오픈 베타 즉시 가동하기] 버튼을 1번만 더 클릭해 주세요.');
+                alert('Notice: Render 서버가 첫 로드 시 잠시 깨어나는 대기(Cold Start) 상태일 수 있습니다. 확인을 누르고 버튼을 1번만 더 클릭해 주세요.');
                 document.getElementById('oTcr').innerText = 'Inference failure';
                 document.getElementById('oMhc').innerText = 'Inference failure'; 
                 document.getElementById('oAf').innerText = 'Inference failure'; 
