@@ -1,174 +1,114 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="utf-8">
-    <title>ImmuneNexus Hub</title>
+    <meta charset="UTF-8">
+    <title>ImmuneNexus</title>
     <style>
-        body { font-family: sans-serif; background: #fafafa; color: #333; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        .m { min-width: 90%; width: 100%; max-width: 1200px; display: flex; flex-direction: column; gap: 20px; }
-        .panel { background: #fff; border: 1px solid #eaeaea; border-radius: 12px; padding: 24px; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .group { margin-bottom: 16px; }
-        .group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; }
-        .group input { width: 100%; box-sizing: border-box; padding: 12px; border: 1px solid #e1e1e1; border-radius: 6px; font-family: monospace; }
-        .btn { width: 100%; background: #2563eb; color: #fff; border: none; padding: 14px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
-        .btn:hover { background: #1d4ed8; }
-        .item { margin-bottom: 16px; }
-        .item label { display: block; font-size: 0.85rem; font-weight: 600; color: #666; margin-bottom: 6px; }
-        .val { background: #f7fafc; border: 1px solid #edf2f7; padding: 12px; border-radius: 6px; font-family: monospace; min-height: 20px; word-break: break-all; }
-
-        .tcr-master-card { background: #f0fdf4; border: 2px solid #6ee7b7; border-radius: 16px; padding: 24px; margin-bottom: 8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
-        .tcr-master-card h2 { margin-top: 0; color: #065f46; font-size: 1.25rem; font-weight: 700; text-transform: uppercase; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-        .tcr-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-        .tcr-box { background: #ffffff; border: 1px solid #a7f3d0; border-radius: 10px; padding: 16px; box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.02); }
-        .tcr-box label { font-size: 0.85rem; font-weight: 700; color: #047857; display: block; margin-bottom: 8px; text-transform: uppercase; }
-        .tcr-val { font-family: monospace; font-size: 1.3rem; font-weight: 800; color: #065f46; word-break: break-all; letter-spacing: 0.5px; background: #f9fbf9; padding: 10px; border-radius: 6px; border: 1px dashed #acd5e1; }
-
-        .disclaimer-panel { background: #fffdf5; border: 1px solid #fbd38d; border-radius: 12px; padding: 20px; margin-top: 10px; font-size: 0.8rem; color: #744210; line-height: 1.6; }
-        .disclaimer-panel h4 { margin-top: 0; margin-bottom: 8px; color: #9c4221; font-size: 0.9rem; font-weight: 700; text-transform: uppercase; }
-        .disclaimer-panel ul { margin-left: 20px; margin-top: 6px; }
+        body { font-family: sans-serif; background: #fafafa; color: #111; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; }
+        .w { max-width: 900px; width: 100%; display: flex; flex-direction: column; gap: 30px; }
+        .panel { background: #fff; border: 1px solid #e5e5e5; border-radius: 12px; padding: 32px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .group { margin-bottom: 20px; }
+        .group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; }
+        .group input { width: 100%; box-sizing: border-box; padding: 12px; border: 1px solid #e5e5e5; border-radius: 6px; font-family: monospace; }
+        .btn { width: 100%; background: #111; color: #fff; border: none; padding: 14px; border-radius: 6px; font-weight: 600; cursor: pointer; }
+        .item { margin-bottom: 18px; }
+        .item label { display: block; font-size: 0.8rem; font-weight: 600; color: #666; margin-bottom: 4px; }
+        .val { background: #f9f9f9; border: 1px solid #f0f0f0; padding: 12px; border-radius: 6px; font-family: monospace; min-height: 20px; word-break: break-all; }
     </style>
 </head>
 <body>
-<div class="m">
-    <div style="text-align:center;">
-        <h1>ImmuneNexus Central Hub v1.0</h1>
-        <p>Antigen-Based TCR Generation and Docking 3D Structure Design Dashboard</p>
-    </div>
-    <div class="grid">
-        <div class="panel">
-            <h3>🛸 Analysis Condition Input</h3>
-            <hr style="margin: 15px 0; border: 0; border-top: 1px solid #eee;">
-            <div class="group"><label>Antigen Peptide Sequence</label><input type="text" id="pin" value="SIINFEKL"></div>
-            <div class="group"><label>HLA Allele Type (MHC)</label><input type="text" id="hin" value="HLA-A*02:01"></div>
-            <button class="btn" onclick="run()">⚡ Accelerate Structural Model Analysis</button>
+    <div class="w">
+        <!-- 🌟 [문구 변경] 요청하신 대로 암 항원 명칭을 지우고, AI 예측 디자인 모델 콘셉트로 완벽 반영 -->
+        <div style="text-align:center;">
+            <h1>ImmuneNexus Central Data Hub</h1>
+            <p style="font-size: 1.1rem; color: #444; font-weight: 500;">글로벌 오픈 베타 - 항원 TCR 결합 예측 디자인 모델 포털</p>
         </div>
-
-        <div class=<!-- 💡 화면에 결과를 보여주는 영역의 ID 이름을 자바스크립트와 완벽히 일치시킵니다 -->
-            <!-- 🌟 화면에 결과를 보여주는 영역의 ID 이름을 자바스크립트와 완벽히 일치시켰습니다 -->
-            <div class="output-panel">
-                <h3>Structural Model Outputs</h3>
-                
-                <!-- 1. TCR Alpha Chain 칸 -->
-                <div class="field-label">TCR Alpha Chain (Core Output)</div>
-                <div class="field-value" id="tcrAlpha">Waiting for connection...</div>
-                
-                <!-- 2. TCR Beta Chain 칸 -->
-                <div class="field-label">TCR Beta Chain (Core Output)</div>
-                <div class="field-value" id="tcrBeta">Waiting for connection...</div>
-                
-                <!-- 3. MHC Sequence 칸 -->
-                <div class="field-label">MHC Sequence (3D Prediction)</div>
-                <div class="field-value" id="mhc">Waiting for connection...</div>
-                
-                <!-- 4. Structural Feature Vector 칸 -->
-                <div class="field-label">Structural Feature Vector</div>
-                <div class="field-value" id="af">Waiting for connection...</div>
-                
-                <!-- 5. Docking Free Energy 칸 -->
-                <div class="field-label">Docking Free Energy</div>
-                <div class="field-value" id="df">Waiting for connection...</div>
-                
-                <!-- 6. Safety Verdict 칸 -->
-                <div class="field-label">Safety Verdict</div>
-                <div class="field-value" id="sv">Waiting for connection...</div>
+        
+        <div class="grid">
+            <div class="panel">
+                <h2>AI 분석 파라미터 기입</h2>
+                <div class="group"><label>Peptide Sequence</label><input type="text" id="pIn" value="CTELKLSDY"></div>
+                <div class="group"><label>HLA Allele Type</label><input type="text" id="hIn" value="HLA-A*03:01"></div>
+                <button class="btn" onclick="run()">오픈 베타 즉시 가동하기</button>
+            </div>
+            <div class="panel">
+                <h2>AI 구조 연산 결과</h2>
+                <div class="item"><label>MHC Sequence</label><div class="val" id="oMhc">대기 중...</div></div>
+                <div class="item"><label>TCR Split Chain (Core Output)</label><div class="val" id="oTcr" style="font-weight:700;">대기 중...</div></div>
+                <!-- 🌟 [법적 상표권 리스크 방지] 명칭을 안전한 단어로 교체 완료 -->
+                <div class="item"><label>Structural Feature Vector</label><div class="val" id="oAf">대기 중...</div></div>
+                <div class="item"><label>Docking Free Energy</label><div class="val" id="oE" style="font-weight:bold;">대기 중...</div></div>
+                <div class="item"><label>Safety Verdict</label><div class="val" id="oV">대기 중...</div></div>
             </div>
         </div>
     </div>
 
-    <div class="disclaimer-panel">
-        <h4>Legal Disclaimer and Terms of Use (법적 고지 및 이용 약관)</h4>
-        <p>Welcome to ImmuneNexus Central Hub. By using this AI platform, you acknowledge and agree to the following legal terms:</p>
-        <ul>
-            <li><strong>Research Use Only (RUO):</strong> 본 소프트웨어는 학술 연구 및 교육 목적으로 설계된 실험적 인공지능 모델입니다. 의료 진단, 임상 결정, 실제 처방 목적으로 절대 사용할 수 없습니다.</li>
-            <li><strong>Copyright and Intellectual Property:</strong> 본 AI가 생성한 산출물은 현행법상 인간의 창작물로 인정되지 않아 저작권 보호를 받기 어려울 수 있습니다. 사용자는 산출물을 상업적으로 활용하기 전 타인의 저작권 침해 여부를 자체 검증해야 하며, 발생 가능한 분쟁에 대해 개발자는 책임을 지지 않습니다.</li>
-            <li><strong>Data Privacy and Security:</strong> 본 플랫폼은 Render 및 Vercel 무료 서버 인프라를 활용하여 구동됩니다. 기밀성이 요구되는 면역학 유전체 코드, 환자 개인정보, 비공개 기업 기밀 문서를 입력하는 것을 절대 금지하며, 입력된 데이터의 외부 유출 및 AI 학습 활용 리스크에 대해 서비스 제공자는 면책됩니다.</li>
-            <li><strong>AI 기본법 및 이용사업자 준수 의무:</strong> 본 플랫폼은 외부 오픈소스 및 데이터셋을 가공하여 연동하는 인공지능 이용사업 서비스입니다. 원천 데이터의 크롤링 및 저작권 침해 문제에서 자유로울 수 없으므로 모든 산출물은 실험실 시뮬레이션용 데이터 사전 모드로만 제한 구동됩니다.</li>
-        </ul>
-    </div>
-</div>
+    <script>
+        // 🌟 최신 정밀 가동 중인 백엔드 Render 실시간 주소 바인딩 완료
+        const API_URL = "https://immunenexus-api-ktbt.onrender.com";
 
-<script>
-    const API_URL = "https://immunenexus-api-ktbt.onrender.com";
-
-async function run() {
-    const p = document.getElementById("pin").value.trim();
-    const h = document.getElementById("hin").value.trim();
-
-    if (!p || !h) {
-        alert("Please enter both Peptide and HLA data.");
-        return;
-    }
-
-    // 💡 분석 시작 시 사용자에게 정량적 추론 연산이 시작됨을 알리는 로딩 상태 최적화
-    document.getElementById("mhc").innerText = "Translating Allele Name into Full Amino Acid Sequence...";
-    document.getElementById("tcrAlpha").innerText = "Designing Specific TCR Alpha Chain...";
-    document.getElementById("tcrBeta").innerText = "Designing Specific TCR Beta Chain...";
-    document.getElementById("tcrAlpha").style.color = "#a0aec0";
-    document.getElementById("tcrBeta").style.color = "#a0aec0";
-
-    document.getElementById("af").innerText = "Extracting Topology Graph (Nodes, Edges, Dimensions)...";
-    document.getElementById("df").innerText = "Computing Gibbs Free Energy (ΔG kcal/mol) via Vina Engine...";
-    document.getElementById("sv").innerText = "Calculating Complex Dissociation Constant (Kd) & Half-life...";
-
-        try {
-        // 1. 🌟 [정밀 교정] 주소 변수 호출 방식을 자바스크립트 표준 표준으로 완벽 동기화합니다.
+        async function run() {
+            const p = document.getElementById('pIn').value.trim();
+            const h = document.getElementById('hIn').value.trim();
+            
+            if(!p || !h) { 
+                alert('입력값을 확인해주세요.'); 
+                return; 
+            }
+            
+            document.getElementById('oMhc').innerText = '연산 중...'; 
+            document.getElementById('oTcr').innerText = '연산 중...';
+            document.getElementById('oAf').innerText = '연산 중...'; 
+            document.getElementById('oE').innerText = '연산 중...'; 
+            document.getElementById('oV').innerText = '연산 중...';
+            
+                try {
+        // 🌟 백엔드가 열어둔 고유 연산 통로(/api/epitope/predict)를 한 자의 오차도 없이 정밀 결속합니다.
         const res = await fetch(`${API_URL}/api/epitope/predict`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "text/plain"  // 브라우저의 CORS 사전 검사 우회
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'text/plain' // 크롬 브라우저의 OPTIONS 사전 검사 차단 우회
             },
-            body: JSON.stringify({
-                hla_sequence: h,
-                peptide_sequence: p
+            body: JSON.stringify({ 
+                license_tier: "Standard Pro",
+                billing_cycle: "monthly",
+                account_active_seats_count: 3, current_month_cumulative_usage: 500,
+                text_peptide: p,
+                text_hla: h
             })
         });
 
-        // 🌟 [정밀 교정] res 앞에 느낌표(!)가 정확히 붙어있어야 성공했을 때 튕기지 않습니다!
-        if (!res.ok) throw new Error("Inference Server Error");
-        
-        // 2. 백엔드가 보낸 무결점 PlainText 데이터를 자바스크립트 객체로 올바르게 변환
-        const responseText = await res.text();
-        const data = JSON.parse(responseText);
+        if(!res.ok) throw new Error("Inference Server Error");
+                
+                // 백엔드가 돌려준 PlainText 데이터를 안전하게 자바스크립트 객체로 복원
+                const responseText = await res.text();
+                const responseData = JSON.parse(responseText);
+                
+                // 🌟 백엔드 리턴 데이터 주머니 내부 키 이름을 화면 칸에 맞게 기계적 정렬 분배
+                document.getElementById('oMhc').innerText = responseData.generated_mhc;
+                document.getElementById('oTcr').innerText = responseData.generated_alpha + " / " + responseData.generated_beta;
+                document.getElementById('oAf').innerText = responseData.vfd_vval_sequence;
+                document.getElementById('oE').innerText = responseData.vfd_vval_id2;
+                document.getElementById('oV').innerText = responseData.sv_text;
+                
+                // 안전성 가독성 향상을 위한 컬러 다이내믹스 스위칭 구조
+                if (responseData.vfd_vval_indicator === 'APPROVED') {
+                    document.getElementById('oV').style.color = '#00875a';
+                } else {
+                    document.getElementById('oV').style.color = '#ff0000';
+                }
+                document.getElementById('oV').style.fontWeight = '700';
 
-        // 3. 🌟 [정밀 동기화] 백엔드 글로벌 표준 연산 데이터셋과 프론트엔드 화면 칸의 매핑 순서 100% 일치
-        
-        // ① MHC Sequence 칸 ➡️ 백엔드에서 반환된 진짜 풀 아미노산 대문자 서열(예시 서열) 바인딩
-        document.getElementById("mhc").innerText = data.generated_mhc;
-        
-        // ② Structural Feature Vector 칸 ➡️ 백엔드 pmoGNN 기준 정량 수치(Nodes / Edges / Dim) 바인딩
-        document.getElementById("af").innerText = data.vfd_vval_sequence;
-        
-        // ③ TCR Alpha 및 Beta 실시간 생성 디자인 서열 출력
-        document.getElementById("tcrAlpha").innerText = data.generated_alpha;
-        document.getElementById("tcrBeta").innerText = data.generated_beta;
-        document.getElementById("tcrAlpha").style.color = "#047857";
-        document.getElementById("tcrBeta").style.color = "#047857";
-
-        // ④ Safety Verdict 칸 ➡️ 백엔드의 해리 상수 Kd nM 지표 및 복합체 반감기 수치 정밀 출력
-        document.getElementById("sv").innerText = data.sv_text || "Inference failed";
-
-        // ⑤ Docking Free Energy 칸 ➡️ Autodock Vina Gibbs Free Energy(ΔG) 수치 및 결합 신뢰도 출력
-        const scoreDisplay = data.vfd_vval_id2 || data.vval_id2 || "Inference failed";
-        document.getElementById("df").innerText = `${data.vfd_vval_indicator} / ${scoreDisplay}`;
-        
-        if (data.vfd_vval_indicator === 'REFUSED') {
-            document.getElementById("df").style.color = "#b91c1c";
-        } else {
-            document.getElementById("df").style.color = "#047857";
+            } catch(e) {
+                alert('Notice: Render 서버가 첫 로드 시 수면 모드 상태일 수 있습니다. 확인을 누르고 버튼을 1번만 더 클릭해 주세요.');
+                document.getElementById('oMhc').innerText = 'Inference failure'; 
+                document.getElementById('oTcr').innerText = 'Inference failure';
+                document.getElementById('oAf').innerText = 'Inference failure'; 
+                document.getElementById('oE').innerText = 'Inference failure'; 
+                document.getElementById('oV').innerText = 'Inference failure';
+            }
         }
-
-    } catch (err) {
-        alert("Notice: The Render server can be initialized. Please click the accelerate button again in a moment.");
-        document.getElementById("mhc").innerText = "Inference failure";
-        document.getElementById("tcrAlpha").innerText = "Inference failure";
-        document.getElementById("tcrBeta").innerText = "Inference failure";
-        document.getElementById("af").innerText = "Inference failure";
-        document.getElementById("df").innerText = "Inference failure";
-        document.getElementById("sv").innerText = "Inference failure";
-    }
-}
-
-</script>
+    </script>
 </body>
 </html>
