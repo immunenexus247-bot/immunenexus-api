@@ -100,15 +100,16 @@ async function run() {
         return;
     }
 
-    document.getElementById("mhc").innerText = "Searching MHC amino acid inverse sequence...";
-    document.getElementById("tcrAlpha").innerText = "Designing Alpha...";
-    document.getElementById("tcrBeta").innerText = "Designing Beta...";
+    // 💡 분석 시작 시 사용자에게 정량적 추론 연산이 시작됨을 알리는 로딩 상태 최적화
+    document.getElementById("mhc").innerText = "Translating Allele Name into Full Amino Acid Sequence...";
+    document.getElementById("tcrAlpha").innerText = "Designing Specific TCR Alpha Chain...";
+    document.getElementById("tcrBeta").innerText = "Designing Specific TCR Beta Chain...";
     document.getElementById("tcrAlpha").style.color = "#a0aec0";
     document.getElementById("tcrBeta").style.color = "#a0aec0";
 
-    document.getElementById("af").innerText = "Embedding GNN frame mapping...";
-    document.getElementById("df").innerText = "Calculating Quantum Mechanical Force Field...";
-    document.getElementById("sv").innerText = "Computing Thermodynamic Equilibrium Grade...";
+    document.getElementById("af").innerText = "Extracting Topology Graph (Nodes, Edges, Dimensions)...";
+    document.getElementById("df").innerText = "Computing Gibbs Free Energy (ΔG kcal/mol) via Vina Engine...";
+    document.getElementById("sv").innerText = "Calculating Complex Dissociation Constant (Kd) & Half-life...";
 
     try {
         // 1. 주소 및 경로 정밀 연동 (CORS 차단 방지)
@@ -125,25 +126,29 @@ async function run() {
 
         if (!res.ok) throw new Error("Inference Server Error");
         
-        // 2. 백엔드 PlainText 데이터를 자바스크립트 객체로 올바르게 변환
+        // 2. 백엔드가 보낸 무결점 PlainText 데이터를 자바스크립트 객체로 올바르게 변환
         const responseText = await res.text();
         const data = JSON.parse(responseText);
 
-        // 3. 백엔드 변수 이름과 프론트엔드 화면 칸의 매핑 순서 100% 일치
+        // 3. 🌟 [정밀 동기화] 백엔드 글로벌 표준 연산 데이터셋과 프론트엔드 화면 칸의 매핑 순서 100% 일치
+        
+        // ① MHC Sequence 칸 ➡️ 백엔드에서 반환된 진짜 풀 아미노산 대문자 서열(예시 서열) 바인딩
         document.getElementById("mhc").innerText = data.generated_mhc;
+        
+        // ② Structural Feature Vector 칸 ➡️ 백엔드 pmoGNN 기준 정량 수치(Nodes / Edges / Dim) 바인딩
         document.getElementById("af").innerText = data.vfd_vval_sequence;
         
+        // ③ TCR Alpha 및 Beta 실시간 생성 디자인 서열 출력
         document.getElementById("tcrAlpha").innerText = data.generated_alpha;
         document.getElementById("tcrBeta").innerText = data.generated_beta;
         document.getElementById("tcrAlpha").style.color = "#047857";
         document.getElementById("tcrBeta").style.color = "#047857";
 
-        // 🌟 [오타 완벽 박멸] 세미콜론 위치와 문법을 정석대로 결합하여 오류를 원천 차단합니다.
-        document.getElementById("sv").innerText = data.sv_text || "Inhibit form Resonance Tabulated Linked";
+        // ④ Safety Verdict 칸 ➡️ 백엔드의 해리 상수 Kd nM 지표 및 복합체 반감기 수치 정밀 출력
+        document.getElementById("sv").innerText = data.sv_text || "Inference failed";
 
-        // 4. 에너지 및 확률 스코어 정밀 출력
+        // ⑤ Docking Free Energy 칸 ➡️ Autodock Vina Gibbs Free Energy(ΔG) 수치 및 결합 신뢰도 출력
         const scoreDisplay = data.vfd_vval_id2 || data.vval_id2 || "Inference failed";
-        // ✅ 수정 후 (양쪽 끝을 백틱 ` 기호로 올바르게 교정)
         document.getElementById("df").innerText = `${data.vfd_vval_indicator} / ${scoreDisplay}`;
         
         if (data.vfd_vval_indicator === 'REFUSED') {
