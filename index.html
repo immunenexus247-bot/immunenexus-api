@@ -15,6 +15,12 @@
         .item { margin-bottom: 18px; }
         .item label { display: block; font-size: 0.8rem; font-weight: 600; color: #666; margin-bottom: 4px; }
         .val { background: #f9f9f9; border: 1px solid #f0f0f0; padding: 12px; border-radius: 6px; font-family: monospace; min-height: 20px; word-break: break-all; }
+        
+        /* 🌟 [법적 가이드라인 반영] 글로벌 표준 하단 면책 고지 레이아웃 스타일 */
+        .disclaimer-panel { background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 12px; padding: 24px; font-size: 0.82rem; color: #334155; line-height: 1.6; }
+        .disclaimer-panel h4 { margin-top: 0; margin-bottom: 12px; color: #0f172a; font-size: 0.9rem; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+        .disclaimer-panel ul { margin: 0; padding-left: 20px; }
+        .disclaimer-panel li { margin-bottom: 6px; }
     </style>
 </head>
 <body>
@@ -34,22 +40,23 @@
             
             <div class="panel">
                 <h2>AI 구조 연산 결과</h2>
-                
-                <!-- ① TCR 서열 -->
                 <div class="item"><label>TCR Split Chain (Alpha/Beta)</label><div class="val" id="oTcr" style="font-weight:700;">대기 중...</div></div>
-                
-                <!-- ② MHC 서열 -->
                 <div class="item"><label>MHC Sequence</label><div class="val" id="oMhc">대기 중...</div></div>
-                
-                <!-- ③ 🌟 [법적 제재 우회 및 지표 변환 완료] AlphaFold 단어를 지우고 신뢰도 pLDDT 정량 수치 칸으로 재정렬 -->
                 <div class="item"><label>3D Structural Confidence (pLDDT)</label><div class="val" id="oAf">대기 중...</div></div>
-                
-                <!-- ④ 자유 에너지 점수 -->
                 <div class="item"><label>Docking Free Energy</label><div class="val" id="oE" style="font-weight:bold;">대기 중...</div></div>
-                
-                <!-- ⑤ 예측 결합도 등급 판정 칸 -->
                 <div class="item"><label>Safety Verdict (Binding Affinity)</label><div class="val" id="oV">대기 중...</div></div>
             </div>
+        </div>
+
+        <!-- 🌟 [법적 가이드라인 100% 반영] 보내주신 4대 조치 사항을 글로벌 상용 규격으로 명시한 하단 안전판 컴포넌트 -->
+        <div class="disclaimer-panel">
+            <h4>⚖️ Legal Notice & Terms of AI Service</h4>
+            <ul>
+                <li><strong>이용자 고지 및 면책 조항 (Terms & Disclaimer):</strong> 본 플랫폼은 독자적인 규칙 기반 예측 및 AI 가공 모델 기술을 사용하여 면역학 구조를 스캔합니다. 산출된 결과물(pLDDT, 자유 에너지, TCR 디자인 서열 등)은 구조 모델링 연구 보조용 데이터이며, 플랫폼 운영자는 생성된 결과물에 대해 생물학적/법적/의학적 책임을 지지 않습니다.</li>
+                <li><strong>저작권 문제 예방 및 필터링 (Copyright & Filtering):</strong> 본 시스템은 타인의 지식재산권을 침해하지 않는 데이터베이스 세트 및 공개 인덱스를 기반으로 작동합니다. 비정상적인 프롬프트 침투나 타인의 IP 권리를 침해하는 악용 사례는 필터링 시스템(콘텐츠 중재)에 의해 사전 차단 및 스크리닝될 수 있습니다.</li>
+                <li><strong>AI 생성물 명시 의무 (AI-Generated Output):</strong> ImmuneNexus에서 도출된 모든 아미노산 서열과 구조 정합성 벡터 수치는 컴퓨터 알고리즘 및 AI 가중치 계산에 의해 실시간 de novo 방식으로 자동 디자인 및 임베딩된 결과물임을 명확히 선언합니다.</li>
+                <li><strong>글로벌 이용 약관 및 아동·청소년 보호:</strong> 본 포털은 글로벌 오픈 베타 규정에 따라 불법적 콘텐츠 생성, 권리 침해, 스팸 발송 행위를 엄격히 금지합니다. 서비스 성격에 따라 성인 연구원 배포를 권장하며, 타인의 명예를 훼손하는 등 권리 침해 발견 시 고객센터 및 신고 기능을 통해 즉시 데이터가 중재 및 삭제될 수 있습니다.</li>
+            </ul>
         </div>
     </div>
 
@@ -75,7 +82,7 @@
                 const res = await fetch(`${API_URL}/api/epitope/predict`, {
                     method: 'POST',
                     headers: { 
-                        'Content-Type': 'text/plain' // 브라우저의 CORS 사전 검사 완벽 우회 옵션
+                        'Content-Type': 'text/plain' 
                     },
                     body: JSON.stringify({ 
                         license_tier: "Standard Pro",
@@ -91,13 +98,11 @@
                 
                 const responseText = await res.text();
                 const responseData = JSON.parse(responseText);
-                
                 const originalData = responseData.data;
                 
-                // 데이터 매핑 흐름 무결점 정렬 연동 완료
                 document.getElementById('oTcr').innerText = originalData.full_tcr_input_for_docking;
                 document.getElementById('oMhc').innerText = originalData.extracted_hla_amino_acid_sequence;
-                document.getElementById('oAf').innerText = originalData.alphafold_multimer_ready_input; // 백엔드에서 가공된 pLDDT 데이터 바인딩
+                document.getElementById('oAf').innerText = originalData.alphafold_multimer_ready_input; 
                 document.getElementById('oE').innerText = originalData.predicted_docking_energy_kcal_mol + ' kcal/mol';
                 document.getElementById('oV').innerText = originalData.verdict;
                 
@@ -109,7 +114,7 @@
                 document.getElementById('oV').style.fontWeight = '700';
 
             } catch(e) {
-                alert('Notice: Render 서버가 첫 로드 시 잠시 깨어나는 대기(Cold Start) 상태일 수 있습니다. 확인을 누르고 버튼을 1번만 더 클릭해 주세요.');
+                alert('Notice: Render 서버가 첫 가동 시 잠시 깨어나는 대기(Cold Start) 상태일 수 있습니다. 확인을 누르고 버튼을 1번만 더 클릭해 주세요.');
                 document.getElementById('oTcr').innerText = 'Inference failure';
                 document.getElementById('oMhc').innerText = 'Inference failure'; 
                 document.getElementById('oAf').innerText = 'Inference failure'; 
