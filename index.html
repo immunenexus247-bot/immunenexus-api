@@ -44,24 +44,19 @@
         
         <div class="grid">
             <div class="panel">
+                <!-- 상단 리서치 상시 면책 배너 (이모티콘 전면 삭제 마감) -->
                 <div id="alertBanner" style="background: #fef2f2; border: 1px solid #fee2e2; border-radius: 6px; padding: 12px; margin-bottom: 15px; font-size: 0.78rem; color: #991b1b; line-height: 1.4;">
-                    <strong>⚠️ Research Use Only & AI Disclaimer:</strong> This platform is an AI model-based auxiliary tool for structural modeling research. The generated outputs cannot be used for clinical or medical diagnostic purposes. The operator assumes no biological or legal liability for the results. Usage implies full agreement with the terms below.
+                    <strong>Warning: Research Use Only & AI Disclaimer:</strong> This platform is an AI model-based auxiliary tool for structural modeling research. The generated outputs cannot be used for clinical or medical diagnostic purposes. The operator assumes no biological or legal liability for the results. Usage implies full agreement with the terms below.
                 </div>
-
+    
                 <h2 id="inputTitle">AI Analysis Parameter Input</h2>
                 <div class="group"><label id="lblPep">Peptide Sequence</label><input type="text" id="pIn" value="CTELKLSDY"></div>
                 <div class="group"><label id="lblHla">HLA Allele Type</label><input type="text" id="hIn" value="HLA-A*03:01"></div>
-                
-                <div class="captcha-box">
-                    <div class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"></div>
-                </div>
-
                 <button class="btn" id="btnRun" onclick="run()">Launch Open Beta Inference Immediately</button>
             </div>
             
-            <!-- 🌟 [정밀 조율 완료] 자바스크립트 호출명과 HTML 라벨 방의 ID 명칭을 기계적으로 100% 일치시켰습니다 -->
             <div class="panel">
-                <h2 id="resultTitle">AI Structural Computation Results</h2>
+                <h2>AI Structural Computation Results</h2>
                 <div class="item"><label id="lblResTcr">TCR Split Chain (Alpha/Beta)</label><div class="val notranslate" id="oTcr">Awaiting Input...</div></div>
                 <div class="item"><label id="lblResMhc">MHC Sequence</label><div class="val notranslate" id="oMhc">Awaiting Input...</div></div>
                 <div class="item"><label id="lblResAf">3D Structural Confidence (pLDDT)</label><div class="val notranslate" id="oAf">Awaiting Input...</div></div>
@@ -69,29 +64,28 @@
                 <div class="item"><label id="lblResV">Safety Verdict (Binding Affinity)</label><div class="val notranslate" id="oV">Awaiting Input...</div></div>
             </div>
         </div>
-
+    
+        <!-- 하단 실물 약관 패널 (이모티콘 완벽 삭제 및 최상위 방어 배너 문구 개정) -->
         <div class="disclaimer-panel" id="legalPanel">
-            <h4 id="legalTitle">⚖️ Legal Notice & Terms of AI Service</h4>
+            <h4 id="legalTitle">Legal Notice & Terms of AI Service</h4>
             <ul id="legalContent">
-                <!-- ✅ 76번째 줄 교체: 잘려나갔던 글로벌 법적 고지 면책 문장을 완벽하게 마감 처리합니다 -->
-                <li><strong>User Notification & Disclaimer:</strong> This platform scans immunological structures using proprietary rule-based prediction and AI processing model technologies. The platform operator assumes no biological, legal, or medical liability for the generated results.</li>
+                <li><strong>User Notification & Disclaimer:</strong> This platform generates and analyzes virtual immunological sequences and structures using proprietary rule-based prediction and AI generation/processing model technologies. The platform operator assumes no biological, legal, or medical liability regarding the actual binding capabilities or the biological/legal/medical validity of the generated outputs.</li>
             </ul>
         </div>
     </div>
+    
     <script>
-        // 🌟 실시간 구동 중인 진짜 고도화 백엔드 인공지능 엔진 주소선 결속
         const API_URL = "https://immunenexus-api-ktbt.onrender.com";
         let currentLang = "en";
         let lastResponseData = null;
-
-        // 자체 다국어 사전 번역 딕셔너리 데이터셋 완벽 매핑 (이모티콘 전면 박멸)
+    
+        // 다국어 사전 딕셔너리 데이터셋 (이모티콘 전면 삭제 및 법적 고지 한영 대칭 일치 마감)
         const langData = {
             en: {
                 mainTitle: "ImmuneNexus Central Data Hub",
                 subTitle: "Global Open Beta - Antigen-TCR Binding Prediction & Generative Design Model Portal",
                 banner: "<strong>Warning: Research Use Only & AI Disclaimer:</strong> This platform is an AI model-based auxiliary tool for structural modeling research. The generated outputs cannot be used for clinical or medical diagnostic purposes. Usage implies full agreement with the terms below.",
                 inputTitle: "AI Analysis Parameter Input", lblPep: "Peptide Sequence", lblHla: "HLA Allele Type", btnRun: "Launch Open Beta Inference Immediately", resultTitle: "AI Structural Computation Results", lblResTcr: "TCR Split Chain (Alpha/Beta)", lblResMhc: "MHC Sequence", lblResAf: "3D Structural Confidence (pLDDT)", lblResE: "Docking Free Energy", lblResV: "Safety Verdict (Binding Affinity)", 
-                // 🌟 [영문 법적 대칭 완료] 한글 수정 문구와 의미를 기계적으로 100% 일치시킨 정석 Legal English 고지문
                 legalTitle: "Legal Notice & Terms of AI Service",
                 legalContent: "<li><strong>User Notification & Disclaimer:</strong> This platform generates and analyzes virtual immunological sequences and structures using proprietary rule-based prediction and AI generation/processing model technologies. The platform operator assumes no biological, legal, or medical liability regarding the actual binding capabilities or the biological/legal/medical validity of the generated outputs.</li>",
                 waiting: "Awaiting Input...", computing: "Computing...",
@@ -103,7 +97,6 @@
                 subTitle: "글로벌 오픈 베타 - 항원 TCR 결합 예측 및 생성형 설계 모델 포털",
                 banner: "<strong>경고: 연구 전용 및 AI 면책 고지:</strong> 본 플랫폼은 인공지능 모델 기반의 연구 보조 도구입니다. 산출된 결과물은 의료 진단 및 임상 목적으로 사용할 수 없으며, 이용 시 하단의 상세 약관에 전원 동의한 것으로 간주됩니다.",
                 inputTitle: "AI 분석 매개변수 입력", lblPep: "펩타이드 서열 (Peptide Sequence)", lblHla: "HLA 대립유전자 유형 (HLA Allele Type)", btnRun: "추론 기능 오픈 베타 즉시 가동하기", resultTitle: "AI 구조 계산 결과", lblResTcr: "TCR 분할 체인 (알파/베타)", lblResMhc: "MHC 서열", lblResAf: "3D 구조적 신뢰도 (pLDDT)", lblResE: "도킹 프리 에너지", lblResV: "안전성 판정 (결합 친화도)", 
-                // 🌟 [한글 이모티콘 삭제 완료] 깔끔한 학술 공인 규격 고지문
                 legalTitle: "법적 고지 및 AI 서비스 이용 약관",
                 legalContent: "<li><strong>이용자 고지 및 면책 조항:</strong> 본 플랫폼은 독자적인 규칙 기반 예측 및 AI 생성·가공 모델 기술을 사용하여 가상의 면역학 서열과 구조를 생성 및 분석합니다. 플랫폼 운영자는 생성된 결과물의 실제 결합 여부나 생물학적/법적/의학적 유효성에 대해 책임을 지지 않습니다.</li>",
                 waiting: "입력 대기 중...", computing: "연산 중...",
@@ -111,8 +104,8 @@
                 alertServer: "알림: 연산 서버가 첫 작동 시 수면 모드에서 깨어나는 중일 수 있습니다. 확인을 누르고 버튼을 1번만 더 클릭해 주세요."
             }
         };
-
-        // 버튼 클릭 시 무결하게 텍스트를 토글 스위칭하는 함수
+        
+                // 버튼 클릭 시 화면 데이터 간판을 실시간으로 바꾸는 컨트롤러 함수 (이모티콘 박멸 스위칭)
         function switchLang(lang) {
             currentLang = lang;
             if(lang === 'en') {
@@ -149,7 +142,7 @@
             }
         }
 
-        // PSSM 가중치 데이터셋을 수려하게 출력창에 바인딩
+        // 고도화 5대 복합 레이어 연산 수치 데이터를 수려하게 바인딩하는 함수
         function renderResults(originalData) {
             document.getElementById('oTcr').innerText = originalData.full_tcr_input_for_docking;
             document.getElementById('oMhc').innerText = originalData.extracted_hla_amino_acid_sequence;
@@ -177,7 +170,7 @@
             document.getElementById('oV').style.fontWeight = '700';
         }
 
-        // Core API 가동 엔진
+        // 5대 고도화 백엔드 서버 엔진과 비동기로 패킷을 교환하는 실치 추론 함수
         async function run() {
             const p = document.getElementById('pIn').value.trim();
             const h = document.getElementById('hIn').value.trim();
